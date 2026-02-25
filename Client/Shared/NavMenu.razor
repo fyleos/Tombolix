@@ -1,0 +1,64 @@
+﻿@inherits StateContainerComponent<NavMenuViewModel>
+
+<div class="sub-module">
+    <div class="inner">
+        <div class="top-row ps-3 navbar navbar-dark">
+            <div class="container-fluid">
+                <button title="Navigation menu" class="navbar-toggler" @onclick="ViewModel.ToggleNavMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="@ViewModel.NavMenuCssClass navbar-scrollable" @onclick="ViewModel.ToggleNavMenu">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> @T.TEXT("HOME")
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="counter" Match="NavLinkMatch.All">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="fetchdata" Match="NavLinkMatch.All">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                    </NavLink>
+                </div>
+                <AuthorizeView Roles="Admin,SuperAdmin">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <span class="nav-link strong text-center muted"> @T.TEXT("ADMIN_TOOL_SEPARATOR") </span>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView Roles="SuperAdmin">
+                    <Authorized>
+                        @*                 <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="Admin" Match="NavLinkMatch.All">
+                        <span class="oi oi-cog" aria-hidden="true"></span> Administration
+                    </NavLink>
+                </div> *@
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView Roles="Admin,SuperAdmin">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="users" Match="NavLinkMatch.Prefix">
+                                <span class="oi oi-person" aria-hidden="true"></span> @T.TEXT("USERS")
+                            </NavLink>
+                        </div>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="roles" Match="NavLinkMatch.Prefix">
+                                <span class="oi oi-people" aria-hidden="true"></span> @T.TEXT("ROLES")
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </nav>
+        </div>
+    </div>
+</div>

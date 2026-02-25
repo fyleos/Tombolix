@@ -1,0 +1,22 @@
+﻿@inherits StateContainerComponent<AdminToolBarViewModel>
+
+@if (ViewModel.IsToolBarVisible)
+{
+	<div class="admin-toolbar module">
+		@foreach (var item in ViewModel.ToolBarItems)
+		{
+			<button class="toolbar-button @item.Class" @onclick="() => ViewModel.OnToolBarItemClicked(item)">
+				@if (!item.HideIcon && !string.IsNullOrEmpty(item.Icon))
+				{
+					<i class="@item.Icon"></i>
+				}
+
+				@if (!item.HideText && !string.IsNullOrEmpty(item.Name))
+				{
+					<span title="@item.Name">@item.Name</span>
+
+				}
+			</button>
+		}
+	</div>
+}

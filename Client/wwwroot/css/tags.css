@@ -1,0 +1,32 @@
+﻿span.tag 
+{
+    border: 1px solid;
+    padding: 10px;
+    margin: 3px;
+    border-radius: 5px;
+    color: #000000;
+}
+span.tag-none {
+    border-color: var(--admin-border-tag-color-gray);
+    background-color: var(--admin-background-tag-color-gray);
+}
+span.tag-red {
+    border-color: var(--admin-border-tag-color-red);
+    background-color: var(--admin-background-tag-color-red);
+}
+span.tag-aqua {
+    border-color: var(--admin-border-tag-color-aqua);
+    background-color: var(--admin-background-tag-color-aqua);
+}
+span.tag-green {
+    border-color: var(--admin-border-tag-color-green);
+    background-color: var(--admin-background-tag-color-green);
+}
+span.tag-blue {
+    border-color: var(--admin-border-tag-color-blue);
+    background-color: var(--admin-background-tag-color-blue);
+}
+span.tag-gold {
+    border-color: var(--admin-border-tag-color-gold);
+    background-color: var(--admin-background-tag-color-gold);
+}

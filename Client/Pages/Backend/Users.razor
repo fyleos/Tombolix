@@ -1,0 +1,99 @@
+﻿@inherits StateContainerComponent<UsersViewModel> 
+@page "/users"
+
+@layout AdminOverlayLayout
+
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="module">
+            <p>@T.TEXT("ACCESS_DENIED")</p>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <HeadContent>
+            <link href="css/table.css" rel="stylesheet" />
+        </HeadContent>
+        <div class="module">
+    <h1 class="admin-page-title">@T.TEXT("USERS_MANAGMENT")</h1>
+
+@if (ViewModel.Users == null)
+{
+    <p>@T.TEXT("LOADING")</p>
+}
+else
+{
+    <div class="table">
+        <div class="inner">
+            <ul class="list-unstyled">
+                <li class="table-header">
+                    <p>Action</p><p>Id</p><p>Name</p><p>Email</p><p>Groups</p>
+                </li>
+                @foreach (var user in ViewModel.Users)
+                {
+                    <li class="table-item">
+                        <p>
+                            @if (ViewModel.UserRoles.ContainsKey(user.Id) && ViewModel.UserRoles[user.Id] && !ViewModel.IsUserIdMatchConnectedId(user.Id))
+                            {
+                                <button class="border-1" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                                    </svg>
+                                </button>
+                            }
+                            else
+                            {
+                                <button class="border-1" @onclick="() => ViewModel.NavigateToUpdateUser(user.Id)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                                        <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                                    </svg>
+                                </button>
+                            }
+
+                        </p>
+
+
+                        <p>@user.Id</p>
+
+                        <p>@user.Name</p>
+
+                        <p>@user.Email</p>
+                        @if (@user.Roles.Count == 0)
+                        {
+                            <p>no role assigned</p>
+                        }
+                        else
+                        {
+                            <p>
+                                @foreach (var role in @user.Roles)
+                                {
+                                    @switch (role)
+                                    {
+                                        case "SuperAdmin":
+                                            <Tag Text="@role" Color="@Tag.TagColorName.red" />
+                                            break;
+                                        case "Essentiel":
+                                            <Tag Text="@role" Color="@Tag.TagColorName.green" />
+                                            break;
+                                        case "Pro":
+                                            <Tag Text="@role" Color="@Tag.TagColorName.aqua" />
+                                            break;
+                                        case "Premium":
+                                            <Tag Text="@role" Color="@Tag.TagColorName.gold" />
+                                            break;
+                                        default:
+                                            <Tag Text="@role" Color="@Tag.TagColorName.none" />
+                                            break;
+                                    }
+                                }
+                            </p>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+</div>
+    </Authorized>
+</AuthorizeView>

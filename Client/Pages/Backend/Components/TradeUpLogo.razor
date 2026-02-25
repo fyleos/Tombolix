@@ -1,0 +1,46 @@
+﻿@using System.Security.Claims
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IConfiguration Config
+
+<span id="brand-logo" class="@brandClass">@Config["AppSettings:ApplicationName"]</span>
+
+@code {
+
+    private string brandClass = "brand";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var authUser = authState.User;
+
+        if (authUser.Identity is not null && authUser.Identity.IsAuthenticated)
+        {
+            var userRoles = authUser.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+
+            if (userRoles.Contains("SuperAdmin"))
+            {
+                brandClass = "brand-superadmin";
+            }
+            else if (userRoles.Contains("Essentiel"))
+            {
+                brandClass = "brand-essentiel";
+            }
+            else if (userRoles.Contains("Pro"))
+            {
+                brandClass = "brand-pro";
+            }
+            else if (userRoles.Contains("Premium"))
+            {
+                brandClass = "brand-premium";
+            }
+            else
+            {
+                brandClass = "brand-logged";
+            }
+        }
+        else
+        {
+            brandClass = "brand-guest";
+        }
+    }
+}

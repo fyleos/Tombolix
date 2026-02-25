@@ -1,0 +1,10 @@
+﻿@page "/"
+
+<AuthorizeView>
+    <Authorized>
+        <HomeContent/>
+    </Authorized>
+    <NotAuthorized>
+        <RegisterHomeIncitation />
+    </NotAuthorized>
+</AuthorizeView>

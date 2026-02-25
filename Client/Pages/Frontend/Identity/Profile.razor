@@ -1,0 +1,80 @@
+﻿@page "/Identity/Account/Profile"
+@inherits StateContainerComponent<ProfileViewModel>
+
+<AuthorizeView Context="auth">
+    <Authorized>
+        <div class="module p-4">
+            <div class="flex-section">
+                <h2 class="text-cyan mb-4"><i class="oi oi-person"></i> @T.TEXT("MY_PROFILE")</h2>
+                @if (ViewModel.User?.Roles is not null)
+                {
+                    string maxRole = "Free";
+                    if (ViewModel.User.Roles.Contains("Premium"))
+                    {
+                        maxRole = "Premium";
+                    }
+                    else if (ViewModel.User.Roles.Contains("Pro"))
+                    {
+                        maxRole = "Pro";
+                    }
+                    else if (ViewModel.User.Roles.Contains("Essentiel"))
+                    {
+                        maxRole = "Essentiel";
+                    }
+
+                    <span class="badge @maxRole.ToLower()">@T.TEXT(maxRole.ToUpper())</span>
+                }
+            </div>
+
+
+            @if (ViewModel.IsLoading)
+            {
+                <div class="spinner-border text-info" role="status">@T.TEXT("LOADING")</div>
+            }
+            else
+            {
+                <div class=" ">
+                    <div class="card-body p-4">
+                        <EditForm Model="ViewModel" OnValidSubmit="ViewModel.UpdateProfile">
+                            <DataAnnotationsValidator />
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">@T.TEXT("USER_ID")</label>
+                                <input type="text" class="form-control bg-dark border-secondary text-muted"
+                                       value="@ViewModel.User?.Id" disabled />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-cyan">@T.TEXT("USER_EMAIL_LOGIN")</label>
+                                <InputText @bind-Value="ViewModel.User.Email" class="form-control bg-dark text-white border-purple" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-cyan">@T.TEXT("USER_DISPLAY_NAME")</label>
+                                <InputText @bind-Value="ViewModel.User.DisplayName" class="form-control bg-dark text-white border-purple" />
+                            </div>
+
+                            <div class="mt-4 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary-neon">
+                                    <i class="oi oi-circle-check"></i> @T.TEXT("SAVE")
+                                </button>
+                                <a href="/" class="btn btn-outline-secondary">@T.TEXT("CANCEL")</a>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <NotAuthorizedBlock />
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.LoadUserProfile();
+    }
+}

@@ -1,0 +1,47 @@
+﻿body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    background-image: url(https://cdn.mathieu-gerard.com/images/background_light_purple.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+header > nav.navbar, header > nav a.navbar-brand {
+    font-size: 2rem;
+}
+header > nav.navbar a {
+}
+div.container.module, div.container.module main>div.row {
+    margin-right: auto;
+    margin-left: auto;
+}
+div.container.module main
+{
+    display: flex;
+    flex-direction: column;
+}
+div.container main h1 {
+    text-align: center;
+    font-size: 2rem;
+}
+div.row>div{
+    /*margin:auto;*/
+}
+.navbar-brand{
+    font-size:1.5rem;
+}
+.navbar > .container {
+    display: block;
+    text-align: center;
+}
+footer div.container.module {
+    text-align: center;
+    color: var(--cta-color);
+}
+.bg-dark {
+    color: #fff;
+    border-radius: 3px;
+    padding: 10px;
+    margin: 10px auto 35px auto;
+}

@@ -1,0 +1,143 @@
+﻿body {
+    min-height: 100vh;
+}
+
+.app {
+    height: 100%
+}
+
+.navbar {
+    background-color: inherit !important;
+}
+.navbar-brand, .nav-link {
+    color: var(--cta-color);
+    font-weight: var(--text-strong-weight );
+    font-size: var(--text-strong-size);
+}
+main#site-main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+div.page {
+    padding-right: 1rem;
+    padding-bottom: 1rem;
+    min-height: 100vh;
+    height:100%;
+    background-image: var(--background-app-image);
+    background-color: var(--background-app-color);
+    background-size: var(--background-app-size);
+    background-repeat: var(--background-app-repeat);
+    background-attachment: var(--background-app-position);
+}
+div.module {
+    align-content: var(--module-content-align);
+    background-color: var(--background-module-color);
+    backdrop-filter: var(--background-module-blur);
+    margin: var(--module-margin);
+    padding: var(--module-padding);
+    border-radius: var(--module-border-radius);
+    border-top: var(--module-border-top);
+    border-right: var(--module-border-right);
+    border-bottom: var(--module-border-bottom);
+    border-left: var(--module-border-left);
+    box-shadow: var(--module-box-shadown);
+    color: var(--text-main);
+}
+div.module .disabled {
+    color: var(--text-muted);
+}
+div.module strong, div.module h1, div.module h2, div.module .strong {
+    color: var(--text-strong-color);
+}
+div.module strong, div.module .strong{
+    font-weight:var(--text-strong-weight);
+    font-size:var(--text-strong-size);
+}
+div.module a > span{
+    color: var(--cta-color);
+}
+    div.module h1 {
+        font-size: var(--h1-size);
+    }
+    div.module h2 {
+        font-size: var(--h2-size);
+    }
+    div.module h3 {
+        font-size: var(--h3-size);
+    }
+    div#site-body, div#site-body .inner {
+        height: 100%;
+    }
+
+div#site-body>.inner {
+    display: flex;
+    flex-direction: row;
+}
+
+div.sidebar {
+    background-image: inherit !important;
+    flex: .3;
+    height: auto !important;
+    min-width: 100px;
+    max-width: 250px;
+    position: sticky;
+    top: 0;
+}
+/*div.body_bg{
+    background: var(--background-color);
+    color: var(--text-color);
+}*/
+
+header.head-banner {
+    /*background: var(--background-banner-color);*/
+    margin: 0;
+}
+
+header.head-banner > div.inner{
+    padding: 10px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+span.brand {
+    color: var(--text-banner-color);
+    margin: 10px;
+    font-weight: 400;
+    font-size : 2em;
+}
+
+span.banner_title_span {
+    color: var(--text-banner-color);
+    margin: 10px;
+    font-weight: 400;
+    font-size: 1.5em;
+}
+
+main#site-main-content {
+    /*background: var(--background-site-color);*/
+    color: var(--text-site-color);
+}
+
+
+div#login-bloc a {
+    display: inline-block;
+    width: auto;
+    margin: 5px;
+    color: var(--cta-color);
+    font-weight: var(--text-strong-weight );
+    font-size: var(--text-strong-size);
+    text-decoration: none;
+}
+
+div#sidebar{
+    /*background-image: var(--sidebar-background);
+    color: var(--sidebar-color);*/
+}
+div#sidebar a, div#sidebar button{
+    /*color: var(--sidebar-color);*/
+}
+
+span.muted, p.muted {
+    color: var(--text-muted) !important;
+}

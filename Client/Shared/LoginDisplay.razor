@@ -1,0 +1,35 @@
+﻿@* @inject UserOptionsService UserOptions
+@inject ThemeManagerService ThemeManager
+@inject NavigationManager Navigation
+@inject TranslationService T *@
+@inherits StateContainerComponent<LoginViewModel>
+
+<div id="login-bloc">
+    <AuthorizeView>
+        <Authorized>
+            <a href="Identity/Account/profile">
+                @T.TEXT("HELLO") 
+                @(string.IsNullOrWhiteSpace(ViewModel.User?.DisplayName)? @ViewModel.User?.Name: @ViewModel.User.DisplayName)
+            </a>
+            <button class="nav-link btn btn-link" @onclick="BeginLogOut">@T.TEXT("LOGOUT")</button>
+        </Authorized>
+        <NotAuthorized>
+            <a href="Identity/Account/Register">@T.TEXT("REGISTER")</a>
+            <a href="Identity/Account/Login">@T.TEXT("LOGIN")</a>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    <button class="switch-theme-btn" @onclick="SwitchTheme" />
+</div>
+
+@code{
+    private void BeginLogOut()
+    {
+        NavigationManager.NavigateTo("api/v1/auth/logout", true);
+    }
+
+    private void SwitchTheme()
+    {
+        ViewModel.ThemeManager.SwitchTheme();
+    }
+}

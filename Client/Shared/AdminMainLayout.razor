@@ -1,0 +1,136 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject UserOptionsService UserOptions
+
+@if(@_userOption is not null)
+{
+    <div class="body_bg @_userOption.CurrentTheme">
+        <AuthorizeView>
+            <Authorized>
+                <AdminNavMenu />
+                <div class="admin-container">
+                    <header class="head-banner">
+                        <div class="inner">
+                            <span class="banner_title_span">Administration</span>
+                            <button class="header_btn theme_selector" @onclick="ToggleTheme">Toggle Theme</button>
+                        </div>
+                    </header>
+                    <main>
+                        <div class="inner">
+                            @Body
+                        </div>
+                    </main>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="access-denied">
+                    <TradeUp.Client.Pages.Backend.Authentication Action="Login" />
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+}
+else
+{
+    <div class="body_bg  @DefaultThemeClass">
+        <AuthorizeView>
+            <Authorized>
+                <AdminNavMenu />
+                <div class="admin-container">
+                    <header class="head-banner">
+                        <div class="inner">
+                            <span class="banner_title_span">Administration</span>
+                            <button class="header_btn theme_selector" @onclick="ToggleTheme">Toggle Theme</button>
+                        </div>
+                    </header>
+                    <main>
+                        <div class="inner">
+                            @Body
+                        </div>
+                    </main>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="access-denied">
+                    <TradeUp.Client.Pages.Backend.Authentication Action="Login" />
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+}
+
+<HeadContent>
+    <link href="css/generic.css" rel="stylesheet" />
+    <link href="css/template.css" rel="stylesheet" />
+    <link href="css/tags.css" rel="stylesheet" />
+    <link href="css/admin-template.css" rel="stylesheet" />
+    <link href="css/admin-nav-bar.css" rel="stylesheet" />
+</HeadContent>
+
+@code {
+    private string DefaultThemeClass = "theme-light";
+    private string? _userId;
+    private SharedUserOption? _userOption;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var authUser = authState.User;
+
+        if (authUser is not null && authUser.Identity is not null && authUser.Identity.IsAuthenticated)
+        {
+            _userId = authUser.FindFirst(c => c.Type == "sub")?.Value;
+            _userOption = await Http.GetFromJsonAsync<SharedUserOption>($"api/admin/users/getoptions/{_userId}");
+
+            if(_userOption is null && _userId is not null)
+            {
+                _userOption = new SharedUserOption()
+                    {
+                        UserId = _userId,
+                        CurrentTheme = "theme-dark"
+                    };
+            }
+        }
+        else
+        {
+            _userId = "Utilisateur non authentifié";
+            _userOption = new SharedUserOption()
+                    {
+                        UserId = "00000",
+                        CurrentTheme = "theme-dark"
+                    };
+        }
+    }
+
+    private void RedirectToLogin()
+    {
+        Navigation.NavigateTo("/admin");
+    }
+
+    public void ToggleTheme()
+    {
+        if (_userOption is not null)
+        {
+            _userOption.CurrentTheme = _userOption.CurrentTheme == "theme-light" ? "theme-dark" : "theme-light";
+            UpdateSharedUserOptionAsync(_userOption);
+        }
+        else
+        {
+            DefaultThemeClass = DefaultThemeClass == "theme-light" ? "theme-dark" : "theme-light";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateSharedUserOptionAsync(SharedUserOption sharedUserOption)
+    {
+        var response = UserOptions.UpdateSharedUserOptionAsync(_userId, sharedUserOption);
+
+        if (!response.IsCompleted)
+        {
+            throw new Exception($"Failed to update SharedUserOption: {response.Status}");
+        }
+    }
+}

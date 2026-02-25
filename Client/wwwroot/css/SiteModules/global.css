@@ -1,0 +1,188 @@
+﻿body>div#app>div.page{
+flex-direction: column;
+}
+.header-bar {
+display: flex;
+flex-direction: row;
+background: var(--background-site-banner-color);
+padding: 5px 15px;
+}
+.header-bar > div {
+text-align: center;
+align-content: center;
+}
+div.sidebar>div.top-row.navbar{
+    height:initial;
+    padding: 0;
+}
+div#login-bloc {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    color: var(--cta-color);
+    font-weight: var(--text-strong-weight );
+    font-size: var(--text-strong-size);
+}
+.brand-bloc {
+    text-align: center;
+}
+.auth-bloc
+{
+    flex:1;
+}
+#brand-logo {
+color: var(--text-site-banner-color);
+font-size: 2rem; /* Taille ajustable selon ton design */
+font-weight: 400;
+transition: text-shadow 0.3s ease; /* Transition fluide pour l’effet */
+}
+
+/* Superadmin - Violet électrique */
+#brand-logo.brand-premium {
+    text-shadow: 0 0 5px #bb00ff, 0 0 10px #bb00ff, 0 0 20px #bb00ff, 0 0 40px #bb00ff, 0 0 60px rgba(187, 0, 255, 0.7);
+}
+
+/* Essentiel - Bleu doux */
+#brand-logo.brand-essentiel {
+    text-shadow: 0 0 5px #005d75, 0 0 10px #00ccff, 0 0 20px #00ccff, 0 0 40px #00ccff, 0 0 60px rgba(0, 204, 255, 0.7);
+}
+
+/* Pro - Vert fluo */
+#brand-logo.brand-pro {
+    text-shadow: 0 0 5px #00a944, 0 0 10px #00ff66, 0 0 20px #00ff66, 0 0 40px #00ff66, 0 0 60px rgba(0, 255, 102, 0.7);
+}
+
+/* Premium - Orange ardent */
+#brand-logo.brand-superadmin  {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff6600, 0 0 20px #ff6600, 0 0 40px #ff6600, 0 0 60px rgba(255, 102, 0, 0.7);
+}
+
+/* Logged - Jaune éclatant */
+#brand-logo.brand-logged {
+    text-shadow: 0 0 3px #000000,0 0 6px #ffffff,0 0 12px #ffffff,0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* Guest - Rouge intense */
+#brand-logo.brand-guest {
+    text-shadow: none;
+}
+
+/* Style commun aux deux boutons */
+.btn-with-logo {
+    position: absolute;
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Bouton thème clair (Light) */
+.switch-theme-btn {
+    width: var(--theme-swith-button-width);
+    height: var(--theme-swith-button-width);
+    margin: var(--theme-swith-button-margin);
+    border-radius: 100%;
+    border-color: transparent;
+    background-color: var(--cta-color);
+    mask-image: var(--theme-swith-button-background);
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+    webkit-mask-image: var(--theme-swith-button-background);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    -webkit-mask-position: center;
+    background-size: cover;
+    fill: var(--cta-color);
+}
+
+    /* Pseudo-élément pour le logo en thème clair */
+.theme-light .switch-theme-btn {
+    /*background-color: #fff;*/
+}
+.theme-dark .switch-theme-btn {
+    /*filter: invert(100%);*/
+}
+
+#popup-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.popup {
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+    background: var(--background-site-banner-color);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 50%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+}
+div.btn-box {
+    padding: 2px 5px;
+}
+button.add {
+    border-radius: 50%;
+    height: 34px;
+    width: 34px;
+    margin: 5px 1px;
+}
+
+button.add.feature {
+    background: #174c48;
+    color: #56db56;
+}
+.bg-dark {
+    background: rgb(53 48 117);
+}
+
+.bg-dark-card {
+    background: rgba(29, 27, 49, 0.8);
+    backdrop-filter: blur(15px);
+}
+
+.border-neon {
+    border: 1px solid #00f2ff !important;
+}
+
+.shadow-glow {
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+}
+
+form label {
+    color: var(--cta-color);
+    text-shadow: 0 0 5px rgba(0, 242, 255, 0.5);
+}
+
+.border-purple {
+    border-color: #6c5ce7 !important;
+}
+
+.btn-primary-neon {
+    background: linear-gradient(15deg, #9d95f7, #6c5ce7);
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+.cancel-btn {
+    color: var(--cta-color);
+    border-color: var(--cta-color);
+}

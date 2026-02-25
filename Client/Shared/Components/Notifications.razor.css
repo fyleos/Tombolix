@@ -1,0 +1,57 @@
+﻿#user-notification-box {
+    position : relative;
+    padding: .5rem;
+    margin: 10px 0px 0px 0px;
+}
+#user-notification-box > .inner {
+    display: block;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    width: 60%;
+    height: 10%;
+    transform: translate(-50%, 0px);
+}    
+#user-notification-box .notification {
+    margin-bottom: 10px;
+    position: relative;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#user-notification-box button {
+    position: absolute;
+    right: 10px;
+    border: none;
+    background: none;
+    color: #fff;
+}
+#app-notification-box {
+    padding: .1rem;
+    background-color: var(--background-notification-banner-color);
+}
+#app-notification-box>.inner{
+}
+#app-notification-box .notification {
+    width: 100%;
+    text-align: center;
+}
+#app-notification-box button {
+    border: none;
+    border-radius: 50%;
+    background: none;
+}
+#app-notification-box.app-carousel-container {
+    display: block;
+    overflow: hidden;
+}
+#app-notification-box .app-carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+#app-notification-box .app-carousel-item {
+    min-width: 100%;
+    flex-shrink: 0;
+}

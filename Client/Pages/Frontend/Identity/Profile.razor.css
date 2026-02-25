@@ -1,0 +1,27 @@
+﻿
+.flex-section {
+    display: flex;
+    flex-direction: row;
+}
+.badge {
+    padding: 5px 10px;
+    margin: 0 1rem;
+    border-radius: 5px;
+    height: fit-content;
+    border: solid 1px;
+}
+
+.badge.free {
+    background-color: #c1c1c1;
+    border-color: var(--cta-color);
+    color: var(--cta-color);
+}
+.badge.premium {
+    background-color: #bb00ff;
+}
+.badge.pro {
+    background-color: #00a944;
+}
+.badge.essentiel {
+    background-color: #005d75;
+}

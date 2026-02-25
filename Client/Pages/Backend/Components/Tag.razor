@@ -1,0 +1,19 @@
+﻿<span class="tag tag-@Color">@Text</span>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public TagColorName? Color { get; set; } = TagColorName.none;
+
+    public enum TagColorName
+    {
+        none,
+        gray,
+        red,
+        green,
+        aqua,
+        gold
+    }
+}

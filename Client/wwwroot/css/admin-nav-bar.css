@@ -1,0 +1,45 @@
+﻿#app>.body_bg{
+    display: flex;
+    width: 100%;
+}
+.admin-container{
+    width: 100%;
+}
+.column
+{
+    display: block;
+    width: 250px;
+    height: 100vh;
+}
+.bg-nav{
+    background: var(--admin-background-nav-color);
+}
+#navbar a.nav-link > span.oi {
+    margin: 0 10px;
+}
+#navbar ul > li {
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid;
+    border-color: var(--admin-nav-border-color);
+}
+
+#navbar  ul > li:first-child {
+    border-top: none;
+}
+
+#navbar ul > li:last-child {
+    border-bottom: 1px solid;
+    border-color: var(--admin-nav-border-color);
+}
+#navbar .navbar-brand {
+    background: var(--admin-nav-brand-bg-color);
+    color: var(--admin-nav-brand-color);
+    text-align: center;
+    display: block;
+    margin: auto;
+    height: 3rem;
+}
+.head-banner{
+    height: 3rem;
+}

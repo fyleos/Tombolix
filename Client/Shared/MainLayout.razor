@@ -1,0 +1,54 @@
+﻿@using TradeUp.Client.ViewModels.Shares
+@inherits LayoutComponentBase
+@inject MainLayoutViewModel ViewModel
+@inject IConfiguration Config
+@implements IDisposable
+
+<div class="page @ViewModel.ClasseTheme">
+
+    <div id="site-body">
+        <div class="inner">
+            <div id="sidebar" class="sidebar module">
+                <div class="brand-bloc">
+                    <TradeUpLogo />
+                </div>
+                <NavMenu />
+            </div>
+            <main id="site-main-content">
+                <div class="header-bar module">
+                    <HeaderBar />
+                </div>
+                <article class="content">
+                    @Body
+                    @ChildContent
+                </article>
+            </main>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // S’abonner à l’événement PropertyChanged du ViewModel
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        // Vérifie si la propriété modifiée est ClasseTheme
+        if (e.PropertyName == nameof(ViewModel.ClasseTheme))
+        {
+            StateHasChanged(); // Force le rendu de la vue
+        }
+    }
+
+    public void Dispose()
+    {
+        // Désabonner pour éviter les fuites de mémoire
+        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+    }
+}

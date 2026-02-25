@@ -1,0 +1,44 @@
+﻿@inherits StateContainerComponent<RolesViewModel> 
+
+@page "/roles"
+
+@layout AdminOverlayLayout
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="module">
+            <p>@T.TEXT("ACCESS_DENIED")</p>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <div class="module">
+            <h3>@T.TEXT("PAGE_ROLE_TITLE")</h3>
+
+            @if (ViewModel.Roles is null)
+            {
+                <p><em>@T.TEXT("LOADING")</em></p>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>@T.TEXT("ROLE")</th>
+                            <th>@T.TEXT("ACTION")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var role in ViewModel.Roles)
+                        {
+                            <tr>
+                                <td>@role.RoleName</td>
+                                <td>
+                                    <button class="btn btn-danger" @onclick="() => ViewModel.DeleteRole(role.Id)">@T.TEXT("DELETE")</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </Authorized>
+</AuthorizeView>

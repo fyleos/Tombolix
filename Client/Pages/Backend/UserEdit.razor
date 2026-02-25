@@ -1,0 +1,97 @@
+﻿@inherits StateContainerComponent<UserEditViewModel>
+
+@page "/user"
+@page "/user/{Id}"
+
+@layout AdminOverlayLayout
+
+
+<h1 class="admin-page-title">@T.TEXT("USER_MANAGMENT")</h1>
+@if (ViewModel.user == null)
+{
+    <p>@T.TEXT("LOADING")</p>
+}
+else
+{
+    string tmp_id = Id ?? ViewModel.user.Id;
+
+    <div class="card-body">
+        @* On utilise EditForm pour profiter de la validation .NET *@
+        <EditForm Model="ViewModel" OnValidSubmit="() => ViewModel.UpdateUser(tmp_id)">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label">@T.TEXT("NAME")</label>
+                <InputText @bind-Value="ViewModel.user.Name" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">@T.TEXT("EMAIL")</label>
+                <InputText @bind-Value="ViewModel.user.Email" class="form-control" />
+            </div>
+
+            <div class="form-check mb-3">
+                <InputCheckbox @bind-Value="ViewModel.user.EmailConfirmed" class="form-check-input" id="confirmEmail" />
+                <label class="form-check-label" for="confirmEmail">@T.TEXT("FORM_USER_EMAIL_CONFIRMED")</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label d-block">@T.TEXT("FORM_USER_CURRENT_ROLES")</label>
+                @if (ViewModel.user.Roles != null)
+                {
+                    @foreach (var role in ViewModel.user.Roles)
+                    {
+                        <span class="badge bg-primary me-1">@role</span>
+                    }
+                }
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                <i class="oi oi-circle-check"></i>@T.TEXT("SAVE")
+            </button>
+        </EditForm>
+
+        <div class="additionnal-box">
+            @if (ViewModel.availableRole == null)
+            {
+                <p>@T.TEXT("LOADING")</p>
+            }
+            else
+            {
+                foreach (var role in ViewModel.availableRole)
+                {
+                    <button @onclick="() => ViewModel.AddRole(role)">@T.TEXT("PROMOTE") @role</button>
+                }
+            }
+        </div>
+    </div>
+
+@*     <p>@ViewModel.user.Name</p>
+    <p>@ViewModel.user.Email</p>
+
+    if (ViewModel.availableRole == null)
+    {
+        <p>@T.TEXT("LOADING")</p>
+    }
+    else
+    {
+        foreach (var role in ViewModel.availableRole)
+        {
+            <button @onclick="() => ViewModel.AddRole(role)">@T.TEXT("PROMOTE") @role</button>
+        }
+    } *@
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            await ViewModel.InitializeAsync(Id);
+        }
+    }
+}

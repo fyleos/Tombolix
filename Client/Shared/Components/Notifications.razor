@@ -1,0 +1,32 @@
+﻿@inherits StateContainerComponent<NotificationViewModel>
+
+@if(ViewModel.HasAppNotifications)
+{
+	<div id="app-notification-box" class="app-carousel-container module">
+		<div class="inner app-carousel-track" style="transform: translateX(-@(ViewModel.ActiveNotificationIndex * 100)%);">
+			@foreach (var notification in ViewModel.AppNotifications)
+			{
+				<div class="notification app-carousel-item @notification.Class" @key="notification.Id">
+					<span class="message">@notification.Text</span>
+					<button class="close-button @notification.Class" @onclick="() => ViewModel.DismissNotification(notification.Id)">×</button>
+				</div>
+			}
+		</div>
+	</div>
+
+}
+
+@if (ViewModel.HasUserNotifications)
+{
+	<div id="user-notification-box">
+		<div class="inner">
+			@foreach (var notification in ViewModel.UserNotifications)
+			{
+				<div class="notification @notification.Class" @key="notification.Id">
+					<span class="message">@notification.Text</span>
+					<button class="close-button" @onclick="() => ViewModel.DismissNotification(notification.Id)">×</button>
+				</div>
+			}
+		</div>
+	</div>
+}

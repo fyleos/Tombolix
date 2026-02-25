@@ -1,14 +1,114 @@
 ﻿@inherits StateContainerComponent<HomeContentViewModel>
+@page "/"
+@layout AdminOverlayLayout
 
 <PageTitle>Home</PageTitle>
 <div class="module">
     <div class="inner">
-        <div class="home-box centered-box">
-            <div class="inner text-center">
-                <h1>@AppConfig["AppSettings:ApplicationName"]</h1>
-                <p>@T.TEXT("APP_SLOGAN")</p>
+        @if (ViewModel.IsChoiceOnScreen)
+        {
+            <div class="popup-box">
+                <div class="inner text">
+                    <h2>@T.TEXT("SELECT_PRIMARY_INFO")</h2>
+                    <p>@T.TEXT("TWO_SELECTION_POSSIBLE")</p>
+
+                    @{
+                        var details = ViewModel.TombolaDataHeader?.Details;
+                        int count = details?.Length ?? 0;
+                    }
+
+                    @if (details != null)
+                    {
+                        @for (int i = 0; i < count - 1; i++)
+                        {
+                            var index = i; 
+                            var detailValue = details[index];
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    @onclick="() => ViewModel.HandleInfoSelected(index)"
+                                    @ondblclick="() => ViewModel.HandlePrimaryInfoSelected(index)">
+
+                                <span>@detailValue</span>
+
+                                @if (ViewModel.PrimaryInfoColumnIndex == index)
+                                {
+                                    <span class="selected-tag primary">1</span>
+                                }
+                                else if(ViewModel.SecondaryInfoColumnIndex == index)
+                                {
+                                    <span class="selected-tag secondary">2</span>
+                                }
+                            </button>
+                        }
+
+                        <button type="button" @onclick="() => ViewModel.ValidChoice()">
+                            <span>@T.TEXT("CHOICE_DONE")</span>
+                        </button>
+                    }
+                </div>
             </div>
-        </div>
+        }
+        else if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
+        {
+            <button type="button" @onclick="() => ViewModel.AskChoice()">
+                <span>@T.TEXT("ASK_CHOICE")</span>
+            </button>
+        }
+
+        @if(ViewModel.TombolaDataList is null)
+        {
+            <div class="home-box centered-box">
+                <div class="inner text-center">
+                    <h1>@AppConfig["AppSettings:ApplicationName"]</h1>
+                    <p>@T.TEXT("APP_SLOGAN")</p>
+                    <div class="upload-container">
+
+                        <label for="isHeaderInput" >@T.TEXT("IS_FIRST_LINE_HEADER")</label>
+                        <InputCheckbox id="isHeaderInput" @bind-Value="ViewModel.IsFirstLineHeader" />
+                        <label for="fileInput" class="btn btn-primary">
+                            <i class="oi oi-cloud-upload"></i> Sélectionner un CSV
+                        </label>
+
+                        <InputFile id="fileInput" OnChange="ViewModel.HandleFileSelected" accept=".csv" style="display:none" />
+
+
+                        @if (@ViewModel.isProcessing)
+                        {
+                            <p><em>@T.TEXT("LOADING")</em></p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else if(!ViewModel.TombolaIsProgress)
+        {
+            <button type="button" @onclick="() => ViewModel.RandomChoice()">
+                <span>@T.TEXT("GO")</span>
+            </button>
+        }
+        else if(ViewModel.TombolaIsProgress)
+        {
+            <LuckyLoader />
+        }
+        
+        @if(ViewModel.ResultIndex is not null)
+        {
+            int index = ViewModel.ResultIndex ?? 0;
+            int primary = ViewModel.PrimaryInfoColumnIndex ?? 0;
+            int secondary = ViewModel.SecondaryInfoColumnIndex ?? 0;
+
+            <div class="result-card">
+                <div class="inner">
+                    @if(ViewModel.TombolaDataList[index] is not null)
+                    {
+                        <p>@ViewModel.TombolaDataList[index].Details[primary]</p>
+                        <p>@ViewModel.TombolaDataList[index].Details[secondary]</p>
+                    }
+                </div>
+            </div>
+        }
+
 	</div>
 </div>
 

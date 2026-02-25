@@ -1,0 +1,109 @@
+﻿<div class="loader-container">
+    <div class="lucky-ring">
+        <span></span>
+    </div>
+    <div class="loading-text">Tirage en cours...</div>
+</div>
+
+<style>
+    .loader-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px;
+    }
+
+    .lucky-ring {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        background: transparent;
+        border: 3px solid #3c3c3c;
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+        /* La lueur violette/cyan qui tourne */
+        .lucky-ring:before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #00f7ff; /* Cyan */
+            border-right: 3px solid #7000ff; /* Violet */
+            border-radius: 50%;
+            animation: animateCircle 1.5s linear infinite;
+        }
+
+        /* La petite bille qui "cherche" le gagnant */
+        .lucky-ring span {
+            display: block;
+            position: absolute;
+            top: calc(50% - 2px);
+            left: 50%;
+            width: 50%;
+            height: 4px;
+            background: transparent;
+            transform-origin: left;
+            animation: animateBall 1.5s linear infinite;
+        }
+
+            .lucky-ring span:before {
+                content: '';
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: #00f7ff;
+                top: -6px;
+                right: -8px;
+                box-shadow: 0 0 20px #00f7ff, 0 0 40px #00f7ff;
+            }
+
+    .loading-text {
+        margin-top: 25px;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        font-weight: bold;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        animation: pulseText 1.5s ease-in-out infinite;
+        text-shadow: 0 0 10px #7000ff;
+    }
+
+    @@keyframes animateCircle {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes animateBall {
+        0% {
+            transform: rotate(45deg);
+        }
+
+        100% {
+            transform: rotate(405deg);
+        }
+    }
+
+    @@keyframes pulseText {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+    }
+</style>

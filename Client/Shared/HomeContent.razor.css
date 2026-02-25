@@ -1,0 +1,18 @@
+﻿span.selected-tag {
+    border: 2px solid;
+    border-radius: 50%;
+    aspect-ratio: 1;
+    margin: 1rem;
+    padding: 1px 4px;
+}
+span.selected-tag.primary {
+    color: #0f0;
+    border-color: #0f0;
+}
+span.selected-tag.secondary {
+    color: #00f;
+    border-color: #00f;
+}
+button  {
+    margin: .5rem;
+}

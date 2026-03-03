@@ -6,6 +6,7 @@
     --purple-glow: #a29bfe;
     --text-main: #060606;
     --text-muted: var(--purple-glow);
+    --text-secondary: var(--cyan-neon);
     --text-strong-weight: 500;
     --text-strong-size: 1.2rem;
     --h1-size: 2rem;
@@ -83,6 +84,7 @@
     --purple-glow: #a29bfe;
     --text-main: #e0e0e0;
     --text-muted: #8b8b9e;
+    --text-secondary: var(--purple-main);
     --text-strong-weight: 500;
     --text-strong-size: 1.2rem;
     --h1-size: 2rem;
@@ -100,7 +102,7 @@
     --module-border-left: var(--module-border-width) solid #00f2ff;
     --module-border-radius: 5px;
     --background-app-color: var(--bg);
-    --background-app-image: url("https://cdn.mathieu-gerard.com/images/background_dark_purple.webp") ;
+    --background-app-image: url("https://cdn.mathieu-gerard.com/images/background_dark_purple.webp");
     --background-app-repeat: no-repeat;
     --background-app-attachment: fixed;
     --background-app-size: cover;
@@ -112,7 +114,7 @@
     --text-site-toolbar-color: #2fc9c3;
     --background-toolbar-cta-color: #013257;
     --site-toolbar-padding: 5px 10px;
-    --text-site-toolbar-color: #b3bfbf;
+    --text-site-toolbar-color: var(--purple-main);
     --background-toolbar-cta-color: #013257;
     --background-notification-banner-color: #2b3c4b;
     --background-site-banner-color: #003257;
@@ -128,7 +130,7 @@
     --navbar-color: #ffffff;
     --sidebar-background: linear-gradient(180deg, rgb(3 52 86) 30%, #021725 90%);
     --sidebar-color: #ffffff;
-    --theme-swith-button-background: url(../Images/light-theme_36.png) ;
+    --theme-swith-button-background: url(../Images/light-theme_36.png);
     --theme-swith-button-width: 25px;
     --theme-swith-button-margin: 5px;
     --max-with: 1250px;

@@ -5,6 +5,38 @@
 <PageTitle>Home</PageTitle>
 <div class="module">
     <div class="inner">
+        
+
+        @if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
+        {
+            <button type="button" disabled="@ViewModel.TombolaIsProgress" @onclick="() => ViewModel.AskChoice()">
+                <icon class="oi oi-cog"></icon>
+            </button>
+        }
+        @if(ViewModel.ResultIndex is not null && !ViewModel.TombolaIsProgress)
+        {
+            int index = ViewModel.ResultIndex ?? 0;
+            int primary = ViewModel.PrimaryInfoColumnIndex ?? -1;
+            int secondary = ViewModel.SecondaryInfoColumnIndex ?? -1;
+            <div class="flex-container">
+                <div class="result-card ">
+                    <div class="inner">
+                        @if(ViewModel.TombolaDataList.Count > index)
+                        {
+                            @if (primary >= 0)
+                            {
+                                <p class="primary">@ViewModel.TombolaDataList[index].Details[primary]</p>
+                            }
+                            @if(secondary >= 0)
+                            {
+                                 <p>@ViewModel.TombolaDataList[index].Details[secondary]</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
         @if (ViewModel.IsChoiceOnScreen)
         {
             <div class="popup-box">
@@ -23,9 +55,15 @@
                         {
                             var index = i; 
                             var detailValue = details[index];
+                            string btnclass= "";
+
+                            @if(ViewModel.PrimaryInfoColumnIndex == index || ViewModel.SecondaryInfoColumnIndex == index)
+                            {
+                                btnclass = " selected ";
+                            }
 
                             <button type="button"
-                                    class="btn btn-secondary"
+                                    class="btn btn-secondary @btnclass"
                                     @onclick="() => ViewModel.HandleInfoSelected(index)"
                                     @ondblclick="() => ViewModel.HandlePrimaryInfoSelected(index)">
 
@@ -49,13 +87,8 @@
                 </div>
             </div>
         }
-        else if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
-        {
-            <button type="button" @onclick="() => ViewModel.AskChoice()">
-                <span>@T.TEXT("ASK_CHOICE")</span>
-            </button>
-        }
-
+        
+        <div class="btn-container">
         @if(ViewModel.TombolaDataList is null)
         {
             <div class="home-box centered-box">
@@ -81,34 +114,29 @@
                 </div>
             </div>
         }
-        else if(!ViewModel.TombolaIsProgress)
+
+        else if(!ViewModel.TombolaIsProgress && !ViewModel.IsChoiceOnScreen)
         {
-            <button type="button" @onclick="() => ViewModel.RandomChoice()">
-                <span>@T.TEXT("GO")</span>
-            </button>
+            <div class="flex-container">
+                <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
+                    <span>@T.TEXT("GO")</span>
+                </button>
+            </div>
+
         }
         else if(ViewModel.TombolaIsProgress)
         {
-            <LuckyLoader />
-        }
-        
-        @if(ViewModel.ResultIndex is not null)
-        {
-            int index = ViewModel.ResultIndex ?? 0;
-            int primary = ViewModel.PrimaryInfoColumnIndex ?? 0;
-            int secondary = ViewModel.SecondaryInfoColumnIndex ?? 0;
-
-            <div class="result-card">
-                <div class="inner">
-                    @if(ViewModel.TombolaDataList[index] is not null)
-                    {
-                        <p>@ViewModel.TombolaDataList[index].Details[primary]</p>
-                        <p>@ViewModel.TombolaDataList[index].Details[secondary]</p>
-                    }
-                </div>
+            <div class="flex-container">
+                <LuckyLoader />
+            </div>
+            
+            <div class="flex-container">
+                <button class="ui-action" type="button" disabled="@ViewModel.TombolaIsProgress" @onclick="() => ViewModel.RandomChoice()">
+                    <span>@T.TEXT("GO")</span>
+                </button>
             </div>
         }
-
+        </div>
 	</div>
 </div>
 

@@ -1,4 +1,4 @@
-﻿namespace TradeUp.Client.Models
+﻿namespace TradeUp.Shared.Models
 {
     public class TombolaData
     {

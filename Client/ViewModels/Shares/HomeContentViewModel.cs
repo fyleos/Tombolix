@@ -1,15 +1,36 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using System.Text;
-using TradeUp.Client.Models;
+using TradeUp.Shared.Models;
 
 namespace TradeUp.Client.ViewModels.Shares
 {
     public class HomeContentViewModel : BaseViewModel
     {
+        public DrawContextDTO? EditableContext {  get; set; }
+        public DrawContextDTO DrawContext { get; private set; } = new DrawContextDTO();
         public bool isProcessing { get; private set; } = false; 
         public bool IsFirstLineHeader { get; set; } = true;
         public bool IsChoiceOnScreen => IsChoiceRequired();
         public bool IsChoiceAsked { get; set; } = false;
+
+        public bool IsDrawContextEdition { get; set; } = false;
+
+        private bool isTombolaDataFileRequired = false;
+
+        public bool IsTombolaDataFileRequired 
+        { 
+            get 
+            {
+                return isTombolaDataFileRequired;
+            }
+            set
+            {
+                isTombolaDataFileRequired = value;
+                OnPropertyChanged(nameof(IsTombolaDataFileRequired));
+            }
+        }
+
         public bool TombolaIsProgress { get; private set; } = false;
 
         public int? PrimaryInfoColumnIndex { get; private set; }
@@ -20,24 +41,48 @@ namespace TradeUp.Client.ViewModels.Shares
         private List<int> indexResults = new List<int>();
         public int? ResultIndex { get; private set; }
 
-        public List<TombolaData>? TombolaDataList { get; set; }
-        public TombolaData? TombolaDataHeader { get; set; }
+        public List<ResultDTO> Results 
+        { 
+            get
+            {
+                return DrawContext.Results;
+            }
+            set
+            {
+                DrawContext.Results = value;
+                OnPropertyChanged(nameof(Results));
+            }
+        }
+
+        public List<TombolaData>? TombolaDataList => DrawContext.DrawnItemsDatas;
+        public TombolaData? TombolaDataHeader => DrawContext.DrawInfos;
+
+        public string NewItemName { get; set; } = string.Empty;
 
         override public void Initialize()
         {
             base.Initialize();
             isProcessing = false;
 
-            TombolaDataList = null;
-            TombolaDataHeader = null;
+            string tmp_name = $"draft-{DateTime.Now:yyyyMMdd-HHmmss}";
+            DrawContext = new DrawContextDTO()
+            {
+                Name = tmp_name,
+                DrawnItems = new(),
+                DrawnItemsDatas = null,
+                Results = new List<ResultDTO>()
+            };
+
+            //TombolaDataList = null;
+            //TombolaDataHeader = null;
+            //Results = new List<ResultDTO>();
         }
 
         public async Task HandleFileSelected(InputFileChangeEventArgs e)
         {
             isProcessing = true;
             var file = e.File;
-
-            TombolaDataList = new List<TombolaData>();
+            DrawContext.DrawnItemsDatas = new List<TombolaData>();
 
             try
             {
@@ -52,9 +97,9 @@ namespace TradeUp.Client.ViewModels.Shares
                 while ((line = await reader.ReadLineAsync()) != null)
                 {
                     var columns = line.Split(';'); // Ou ',' selon ton format
-                    if(TombolaDataHeader is null && IsFirstLineHeader)
+                    if(DrawContext.DrawInfos is null && IsFirstLineHeader)
                     {
-                        TombolaDataHeader = new TombolaData { Details = columns };
+                        DrawContext.DrawInfos = new TombolaData { Details = columns };
                         continue;
                     }
 
@@ -71,6 +116,7 @@ namespace TradeUp.Client.ViewModels.Shares
             }
             finally
             {
+                IsTombolaDataFileRequired = false;
                 IsChoiceAsked = true;
                 OnPropertyChanged(nameof(TombolaDataList)); 
                 OnPropertyChanged(nameof(IsChoiceOnScreen));
@@ -80,7 +126,7 @@ namespace TradeUp.Client.ViewModels.Shares
 
         private async Task ProcessCsvLine(string[] columns)
         {
-            TombolaDataList.Add(new TombolaData
+            DrawContext.DrawnItemsDatas.Add(new TombolaData
             {
                 Details = columns
             });
@@ -132,6 +178,45 @@ namespace TradeUp.Client.ViewModels.Shares
             OnPropertyChanged(nameof(IsChoiceOnScreen));
         }
 
+        public void SetUpDrawContext()
+        {
+            EditableContext = new DrawContextDTO
+            {
+                ID = DrawContext.ID,
+                Name = DrawContext.Name,
+                DrawInfos = DrawContext.DrawInfos,
+                DrawnItems = DrawContext.DrawnItems,
+                DrawnItemsDatas = DrawContext.DrawnItemsDatas,
+                Results = DrawContext.Results
+            };
+
+            IsDrawContextEdition = true;
+            OnPropertyChanged(nameof(EditableContext));
+            OnPropertyChanged(nameof(IsDrawContextEdition));
+        }
+
+        public void HandleSaveContext()
+        {
+            //TODO: Save Context in DB if user logged.
+            if(EditableContext == null)
+                return;
+
+            DrawContext = new DrawContextDTO
+            {
+                ID = EditableContext.ID,
+                Name = EditableContext.Name,
+                DrawInfos = EditableContext.DrawInfos,
+                DrawnItems = EditableContext.DrawnItems,
+                DrawnItemsDatas = EditableContext.DrawnItemsDatas,
+                Results = EditableContext.Results
+            };
+
+            EditableContext = null;
+            IsDrawContextEdition = false;
+            OnPropertyChanged(nameof(EditableContext));
+            OnPropertyChanged(nameof(IsDrawContextEdition));
+        }
+
         public void RandomChoice()
         {
             TombolaIsProgress = true;
@@ -155,7 +240,48 @@ namespace TradeUp.Client.ViewModels.Shares
                 ResultIndex = result;
                 OnPropertyChanged(nameof(TombolaIsProgress));
                 OnPropertyChanged(nameof(ResultIndex));
+
+
+                var tmp_result = new List<ResultDTO>(Results);
+                tmp_result.Add(new ResultDTO { TirageIndex = Results.Count + 1, Info = TombolaDataList?[ResultIndex??0] });
+                Results = tmp_result;
+
             });
+        }
+
+        public void HandleKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                AddItem();
+            }
+        }
+
+        public void AddItem()
+        {
+            if (!string.IsNullOrWhiteSpace(NewItemName))
+            {
+                if(DrawContext.DrawnItems is null)
+                {
+                    EditableContext!.DrawnItems = new List<string>();
+                }
+
+                if (EditableContext!.DrawnItems.Contains(NewItemName))
+                {
+                    return;
+                }
+
+                EditableContext!.DrawnItems.Add(NewItemName);
+                NewItemName = string.Empty;
+                OnPropertyChanged(nameof(NewItemName));
+                OnPropertyChanged(nameof(TombolaDataList));
+            }
+        }
+
+        public void RemoveItem(string item)
+        {
+            EditableContext?.DrawnItems?.Remove(item);
+            OnPropertyChanged(nameof(TombolaDataList));
         }
     }
 }

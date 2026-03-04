@@ -13,9 +13,11 @@ span.selected-tag.secondary {
     color: #00f;
     border-color: #00f;
 }
-button  {
+button {
     margin: .5rem;
     border: none;
+}
+button.trsp {
     background: transparent;
 }
 button > icon{
@@ -61,4 +63,8 @@ button.btn-secondary:hover {
 }
 button.selected {
     background: var(--cta-color);
+}
+.mg-b-10
+{
+    margin-bottom: 10px;
 }

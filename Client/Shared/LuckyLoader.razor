@@ -1,8 +1,10 @@
-﻿<div class="loader-container">
+﻿@inject TranslationService T
+
+<div class="loader-container">
     <div class="lucky-ring">
         <span></span>
     </div>
-    <div class="loading-text">Tirage en cours...</div>
+    <div class="loading-text">@T.TEXT("CHOICE_IN_PROGRESS")</div>
 </div>
 
 <style>

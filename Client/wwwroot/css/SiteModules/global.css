@@ -36,6 +36,7 @@ color: var(--text-site-banner-color);
 font-size: 2rem; /* Taille ajustable selon ton design */
 font-weight: 400;
 transition: text-shadow 0.3s ease; /* Transition fluide pour l’effet */
+margin-bottom:2rem;
 }
 
 /* Superadmin - Violet électrique */
@@ -66,6 +67,7 @@ transition: text-shadow 0.3s ease; /* Transition fluide pour l’effet */
 /* Guest - Rouge intense */
 #brand-logo.brand-guest {
     text-shadow: none;
+    color: var(--cta-color);
 }
 
 /* Style commun aux deux boutons */

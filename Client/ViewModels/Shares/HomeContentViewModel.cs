@@ -180,15 +180,7 @@ namespace TradeUp.Client.ViewModels.Shares
 
         public void SetUpDrawContext()
         {
-            EditableContext = new DrawContextDTO
-            {
-                ID = DrawContext.ID,
-                Name = DrawContext.Name,
-                DrawInfos = DrawContext.DrawInfos,
-                DrawnItems = DrawContext.DrawnItems,
-                DrawnItemsDatas = DrawContext.DrawnItemsDatas,
-                Results = DrawContext.Results
-            };
+            EditableContext = DrawContext.Clone();
 
             IsDrawContextEdition = true;
             OnPropertyChanged(nameof(EditableContext));
@@ -201,15 +193,7 @@ namespace TradeUp.Client.ViewModels.Shares
             if(EditableContext == null)
                 return;
 
-            DrawContext = new DrawContextDTO
-            {
-                ID = EditableContext.ID,
-                Name = EditableContext.Name,
-                DrawInfos = EditableContext.DrawInfos,
-                DrawnItems = EditableContext.DrawnItems,
-                DrawnItemsDatas = EditableContext.DrawnItemsDatas,
-                Results = EditableContext.Results
-            };
+            DrawContext = EditableContext.Clone();
 
             EditableContext = null;
             IsDrawContextEdition = false;

@@ -2,23 +2,25 @@
 @page "/"
 @layout AdminOverlayLayout
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@T.TEXT("HOME_TITLE")</PageTitle>
 <div class="module">
     <div class="inner">
-        
-
         @if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
         {
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SET_GIFTS")" @onclick="() => ViewModel.IsTombolaDataFileRequired = !ViewModel.IsTombolaDataFileRequired">
+            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_CSV")" @onclick="() => ViewModel.IsTombolaDataFileRequired = !ViewModel.IsTombolaDataFileRequired">
                 <icon class="oi oi-data-transfer-upload"></icon>
             </button>
             <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_INFO_TO_DISPLAY")"  @onclick="() => ViewModel.AskChoice()">
                 <icon class="oi oi-list-rich"></icon>
             </button>
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_INFO_TO_DISPLAY")"  @onclick="() => ViewModel.SetUpDrawContext()">
+            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")"  @onclick="() => ViewModel.SetUpDrawContext()">
                 <icon class="oi oi-wrench"></icon>
             </button>
         }
+
+        <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp position-absolute end-0 me-4" title="@T.TEXT("RELOAD")"  @onclick="() => NavigationManager.Refresh()">
+            <icon class="oi oi-reload"></icon>
+        </button>
 
         @if(ViewModel.IsDrawContextEdition)
         {
@@ -168,19 +170,16 @@
         }
         
         <div class="btn-container">
-
         @if(ViewModel.TombolaDataList is null || ViewModel.IsTombolaDataFileRequired)
         {
             <div class="">
                 <div class="inner text-center">
-                    <h1>@AppConfig["AppSettings:ApplicationName"]</h1>
-                    <p>@T.TEXT("APP_SLOGAN")</p>
+                    <TradeUpLogo/>
+                    <p class="colored">@T.TEXT("APP_SLOGAN")</p>
                     <div class="upload-container">
                         
-                        <InputCheckbox id="isHeaderInput" @bind-Value="ViewModel.IsFirstLineHeader" /> 
-                        <label for="isHeaderInput" >@T.TEXT("IS_FIRST_LINE_HEADER")</label>
                         <div class="btn-box">
-                            <label for="fileInput" class="btn btn-primary">
+                            <label for="fileInput" class="ui-action cursor-pointer">
                                 <i class="oi oi-cloud-upload"></i>@T.TEXT("SELECT_CSV")
                             </label>
                         </div>
@@ -210,13 +209,22 @@
             {
                 @if( ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
                 {
-                    <p class="text-center">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
+                    <p class="text-center colored">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
                 }
-                    <div class="flex-container">
+                    <div class="flex-container flex-column">
                     <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
                         <span>@T.TEXT("GO")</span>
                     </button>
-                </div>
+
+                        @if(ViewModel.Results.Count == 0)
+                        {
+                            <div class="btn-container">
+                                <button class="ui-action" type="button" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")"  @onclick="() => ViewModel.SetUpDrawContext()">
+                                    <span>@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")</span>
+                                </button>
+                            </div>
+                        }
+                    </div>
             }
         }
         else if(ViewModel.TombolaIsProgress)
@@ -229,17 +237,17 @@
             {                
                 @if (ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
                     {
-                        <h3 class="text-center">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</h3>
+                        <p class="text-center colored">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
                     }
                     <div class="flex-container">
-                    <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
+                    <button class="ui-action" type="button" disabled @onclick="() => ViewModel.RandomChoice()">
                         <span>@T.TEXT("GO")</span>
                     </button>
                 </div>
             }
         }
-        </div>
 
+        </div>
         @if(ViewModel.Results.Count > 0)
         {
             <div class="module">
@@ -250,7 +258,7 @@
                         {
                             int resultIndex = ViewModel.Results?.IndexOf(result)?? -1;
                             <div class="result-item">
-                                <p class="primary"><span class="result-index">@T.TEXT("TIRAGE_NUM") @result.TirageIndex =></span>&nbsp
+                                <p class="primary colored"><span class="result-index">@T.TEXT("TIRAGE_NUM") @result.TirageIndex =></span>&nbsp
                                     @if(resultIndex >= 0 && ViewModel.DrawContext?.DrawnItems.Count > resultIndex && ViewModel.DrawContext?.DrawnItems[resultIndex] is not null)
                                     {
                                         <span>(@ViewModel.DrawContext?.DrawnItems[resultIndex]) </span>
@@ -270,6 +278,7 @@
                 </div>
             </div>
         }
+    
     </div>
 </div>
 

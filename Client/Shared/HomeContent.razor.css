@@ -1,4 +1,11 @@
-﻿span.selected-tag {
+﻿.colored {
+    color: var(--cta-color);
+}
+.cursor-pointer
+{
+    cursor:pointer;
+}
+span.selected-tag {
     border: 2px solid;
     border-radius: 50%;
     aspect-ratio: 1;
@@ -23,7 +30,9 @@ button.trsp {
 button > icon{
     color: var(--cta-color);
 }
-button.ui-action {
+button.ui-action, label.ui-action {
+    width: fit-content;
+    align-self: center;
     font-weight: 700;
     font-size: 2rem;
     border-radius: 50%;
@@ -33,6 +42,9 @@ button.ui-action {
 }
 button.ui-action:disabled {
     color: var(--text-muted);
+}
+.ui-action > i{
+    margin: 0rem .5rem;
 }
 .btn-container{
     display: flex;

@@ -28,6 +28,7 @@ builder.Services.AddHttpClient("Public", client => client.BaseAddress = new Uri(
     .AddHttpMessageHandler<CacheBustingHandler>();
 
 //services registration
+builder.Services.AddScoped<DrawService>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<AssetService>();
 builder.Services.AddScoped<ToolBarService>();

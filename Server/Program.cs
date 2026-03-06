@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using TradeUp.Client.Services;
 using TradeUp.Server.Controllers;
 using TradeUp.Server.Data;
 using TradeUp.Server.Models;
@@ -24,11 +23,13 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<DrawServerService>();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<LicenceService>();
-builder.Services.AddScoped<StateContainerService>();
+//builder.Services.AddScoped<StateContainerService>();
 builder.Services.AddScoped<SharedUserOptionService>();
 
+builder.Services.AddScoped<DrawController>();
 builder.Services.AddScoped<RolesController>();
 builder.Services.AddScoped<AuthController>();
 

@@ -1,12 +1,20 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Text;
+using TradeUp.Client.Services;
 using TradeUp.Shared.Models;
 
 namespace TradeUp.Client.ViewModels.Shares
 {
     public class HomeContentViewModel : BaseViewModel
     {
+        private DrawService _drawService;
+
+        public HomeContentViewModel(DrawService drawService)
+        {
+            _drawService = drawService;
+        }
+
         public DrawContextDTO? EditableContext {  get; set; }
         public DrawContextDTO DrawContext { get; private set; } = new DrawContextDTO();
         public bool isProcessing { get; private set; } = false; 
@@ -199,6 +207,8 @@ namespace TradeUp.Client.ViewModels.Shares
             IsDrawContextEdition = false;
             OnPropertyChanged(nameof(EditableContext));
             OnPropertyChanged(nameof(IsDrawContextEdition));
+
+            _drawService.SaveContextAsync(DrawContext);
         }
 
         public void RandomChoice()

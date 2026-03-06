@@ -18,4 +18,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<SharedUserOption> SharedUserOptions { get; set; }
     public DbSet<ApplicationFeature> ApplicationFeatures { get; set; }
+
+    public DbSet<DrawItem> DrawItems { get; set; }
+    public DbSet<DrawResult> DrawResults { get; set; }
+    public DbSet<DrawContext> DrawContexts { get; set; }
+    public DbSet<DrawData> DrawDatas { get; set; }
 }

@@ -27,5 +27,10 @@ namespace TradeUp.Server.Controllers
 
             return Task.Run(async () =>await _licenceService.IsLicenceValidAsync("debugLicence") == false).Result;
         }
+
+        protected bool IsUserLoggedIn() 
+        {
+            return _userContextService.IsUserAuthenticated();
+        }
     }
 }

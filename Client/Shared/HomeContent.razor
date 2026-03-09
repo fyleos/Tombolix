@@ -5,22 +5,25 @@
 <PageTitle>@T.TEXT("HOME_TITLE")</PageTitle>
 <div class="module">
     <div class="inner">
-        @if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
-        {
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_CSV")" @onclick="() => ViewModel.IsTombolaDataFileRequired = !ViewModel.IsTombolaDataFileRequired">
-                <icon class="oi oi-data-transfer-upload"></icon>
-            </button>
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_INFO_TO_DISPLAY")"  @onclick="() => ViewModel.AskChoice()">
-                <icon class="oi oi-list-rich"></icon>
-            </button>
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")"  @onclick="() => ViewModel.SetUpDrawContext()">
-                <icon class="oi oi-wrench"></icon>
-            </button>
-        }
+        <div class="btn-box">
 
-        <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp position-absolute end-0 me-4" title="@T.TEXT("RELOAD")"  @onclick="() => NavigationManager.Refresh()">
-            <icon class="oi oi-reload"></icon>
-        </button>
+            @if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
+            {
+                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_CSV")" @onclick="() => ViewModel.IsTombolaDataFileRequired = !ViewModel.IsTombolaDataFileRequired">
+                    <icon class="oi oi-data-transfer-upload"></icon>
+                </button>
+                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_INFO_TO_DISPLAY")"  @onclick="() => ViewModel.AskChoice()">
+                    <icon class="oi oi-list-rich"></icon>
+                </button>
+                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")"  @onclick="() => ViewModel.SetUpDrawContext()">
+                    <icon class="oi oi-wrench"></icon>
+                </button>
+            }
+
+            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp position-absolute end-0 me-4" title="@T.TEXT("RELOAD")"  @onclick="() => NavigationManager.Refresh()">
+                <icon class="oi oi-reload"></icon>
+            </button>
+        </div>
 
         @if(ViewModel.IsDrawContextEdition)
         {

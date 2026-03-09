@@ -141,3 +141,13 @@ div#sidebar a, div#sidebar button{
 span.muted, p.muted {
     color: var(--text-muted) !important;
 }
+@media (max-width: 700px)
+{
+    div.module {
+        padding: var(--S-module-padding);
+    }
+    div#site-body .inner{
+        display: flex;
+        flex-direction: column;
+    }
+}

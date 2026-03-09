@@ -17,6 +17,7 @@
     --cta-color: var(--purple-main);
     --module-margin: 1rem 0 0 1rem;
     --module-padding: 3rem 1rem;
+    --S-module-padding: .9rem .5rem;
     --module-border-width: 2px;
     --module-border-top: 0 solid transparent;
     --module-border-right: 0 solid transparent;
@@ -73,6 +74,7 @@
     --admin-background-tag-color-green: #75d16f;
     --admin-background-tag-color-gold: #dfbc31;
     --admin-background-tag-color-blue: #a4b1ff;
+    --S-text-strong-size: 1.2rem;
 }
 
 /* Thème Sombre */
@@ -95,6 +97,7 @@
     --cta-color: var(--cyan-neon);
     --module-margin: 1rem 0 0 1rem;
     --module-padding: 3rem 1rem;
+    --S-module-padding: .9rem .5rem;
     --module-border-width: 2px;
     --module-border-top: 0 solid transparent;
     --module-border-right: 0 solid transparent;
@@ -156,4 +159,5 @@
     --admin-background-tag-color-green: #75d16f;
     --admin-background-tag-color-gold: #dfbc31;
     --admin-background-tag-color-blue: #a4b1ff;
+    --S-text-strong-size: 1rem;
 }

@@ -189,3 +189,12 @@ form label {
     color: var(--cta-color);
     border-color: var(--cta-color);
 }
+@media (max-width: 700px)
+{
+    div#login-bloc, div#login-bloc a {
+        font-size: var(--S-text-strong-size);
+    }
+    div#login-bloc{
+        flex-direction:column;
+    }
+}

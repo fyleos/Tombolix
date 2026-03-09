@@ -80,3 +80,12 @@ button.selected {
 {
     margin-bottom: 10px;
 }
+@media (max-width: 700px) {
+    button.ui-action, label.ui-action {
+        font-size: 1.5rem;
+        padding: 1.5rem;
+    }
+    .btn-box {
+        min-height: 35px;
+    }
+}

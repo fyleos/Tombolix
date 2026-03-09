@@ -18,6 +18,7 @@ div.sidebar>div.top-row.navbar{
 div#login-bloc {
     display: flex;
     flex-direction: row;
+    flex-wrap:wrap;
     justify-content: space-evenly;
     align-items: center;
     color: var(--cta-color);

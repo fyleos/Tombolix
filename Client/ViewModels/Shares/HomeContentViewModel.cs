@@ -80,10 +80,6 @@ namespace TradeUp.Client.ViewModels.Shares
                 DrawnItemsDatas = null,
                 Results = new List<ResultDTO>()
             };
-
-            //TombolaDataList = null;
-            //TombolaDataHeader = null;
-            //Results = new List<ResultDTO>();
         }
 
         public async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -216,31 +212,44 @@ namespace TradeUp.Client.ViewModels.Shares
             TombolaIsProgress = true;
 
             int tries = 0;
-            int result;
+            bool found = false;
+            int result = -1;
+
             do
             {
-                result = new Random().Next(0, TombolaDataList?.Count ?? 0);
+                int tmp_result = new Random().Next(0, TombolaDataList?.Count ?? 0);
                 tries++;
+
+                if (!indexResults.Contains(tmp_result))
+                {
+                    found = true;
+                    result = tmp_result;
+                }
             }
-            while (indexResults.Contains(result) && tries < 200);
+            while (!found && tries < 200);
 
-            indexResults.Add(result);
-
-            Task.Run(async () =>
+            if(result >= 0)
             {
-                await Task.Delay(2000);
-                TombolaIsProgress = false;
+                indexResults.Add(result);
 
-                ResultIndex = result;
-                OnPropertyChanged(nameof(TombolaIsProgress));
-                OnPropertyChanged(nameof(ResultIndex));
+                Task.Run(async () =>
+                {
+                    await Task.Delay(2000);
+                    TombolaIsProgress = false;
+
+                    ResultIndex = result;
+                    OnPropertyChanged(nameof(TombolaIsProgress));
+                    OnPropertyChanged(nameof(ResultIndex));
 
 
-                var tmp_result = new List<ResultDTO>(Results);
-                tmp_result.Add(new ResultDTO { TirageIndex = Results.Count + 1, Info = TombolaDataList?[ResultIndex??0] });
-                Results = tmp_result;
+                    var tmp_result = new List<ResultDTO>(Results);
+                    tmp_result.Add(new ResultDTO { TirageIndex = Results.Count + 1, Info = TombolaDataList?[ResultIndex ?? 0] });
 
-            });
+                    Results = tmp_result;
+                });
+            }
+
+            return;
         }
 
         public void HandleKeyDown(KeyboardEventArgs e)

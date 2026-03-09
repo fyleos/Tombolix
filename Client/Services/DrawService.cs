@@ -27,7 +27,8 @@ namespace TradeUp.Client.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                _notificationService.AddUserErrorNotification("Error on save");
+                var message = response.Content.ReadAsStringAsync();
+                _notificationService.AddUserErrorNotification($"Error: {message}");
                 return;
             }
 

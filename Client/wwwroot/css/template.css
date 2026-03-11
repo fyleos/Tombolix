@@ -1,7 +1,13 @@
 ﻿body {
     min-height: 100vh;
 }
-
+.colored {
+    color: var(--cta-color);
+}
+.cursor-pointer
+{
+    cursor: pointer;
+}
 .app {
     height: 100%
 }

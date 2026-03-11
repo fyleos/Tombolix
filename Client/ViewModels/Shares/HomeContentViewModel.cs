@@ -72,14 +72,40 @@ namespace TradeUp.Client.ViewModels.Shares
             base.Initialize();
             isProcessing = false;
 
-            string tmp_name = $"draft-{DateTime.Now:yyyyMMdd-HHmmss}";
-            DrawContext = new DrawContextDTO()
+            if (_drawService is not null && _drawService.CurrentDraw is not null)
             {
-                Name = tmp_name,
-                DrawnItems = new(),
-                DrawnItemsDatas = null,
-                Results = new List<ResultDTO>()
-            };
+                LogInfo("ok la");
+                DrawContext = _drawService.CurrentDraw;
+                isTombolaDataFileRequired = false;
+            }
+            else if(_drawService is not null)
+            {
+                LogInfo("plutot la");
+                DrawContext = _drawService.NewDraw();
+                isTombolaDataFileRequired = true;
+            }
+            else
+            {
+
+                LogInfo("en fait la la");
+                string tmp_name = $"tmpdraft-{DateTime.Now:yyyyMMdd-HHmmss}";
+                DrawContext = new DrawContextDTO()
+                {
+                    Name = tmp_name,
+                    DrawnItems = new(),
+                    DrawnItemsDatas = null,
+                    Results = new List<ResultDTO>()
+                };
+
+                isTombolaDataFileRequired = true;
+            }
+
+            LogInfo($"nbre de data: {DrawContext.DrawnItemsDatas?.Count}");
+
+            OnPropertyChanged(nameof(DrawContext));
+            OnPropertyChanged(nameof(DrawContext.DrawInfos));
+            OnPropertyChanged(nameof(isTombolaDataFileRequired));
+            OnPropertyChanged(nameof(TombolaDataList));
         }
 
         public async Task HandleFileSelected(InputFileChangeEventArgs e)

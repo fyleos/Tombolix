@@ -1,0 +1,33 @@
+﻿@inherits StateContainerComponent<DrawsViewModel>
+@page "/draws"
+
+@layout AdminOverlayLayout
+
+<PageTitle>@T.TEXT("MY_DRAWS")</PageTitle>
+
+
+
+<div class="module">
+    <AuthorizeView>
+        <Authorized>
+            @if(ViewModel.Draws is null)
+            {
+                <p>@T.TEXT("LOADING")</p>
+            }
+            else
+            {
+                @foreach(var draw in ViewModel.Draws)
+                {
+                    <DrawShort Draw="draw" />
+                }
+            }
+        </Authorized>
+        <NotAuthorized>
+            <NotAuthorizedText/>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+
+}

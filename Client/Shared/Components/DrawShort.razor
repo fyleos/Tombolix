@@ -1,0 +1,20 @@
+﻿@inject NavigationManager Nav
+@inject DrawService DrawService
+
+@if(Draw is not null)
+{
+    <div class="module cursor-pointer" @onclick="() => OnClick(Draw)" >
+        <strong>@Draw.Name</strong><icon class="oi oi-bell position-absolute top-50 translate-middle end-0 me-4 colored" title="Go" />
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DrawContextDTO? Draw { get; set; }
+
+    private void OnClick(DrawContextDTO item)
+    {
+        DrawService.SetCurrentDrawContext(item);
+        Nav.NavigateTo($"/");
+    }
+}

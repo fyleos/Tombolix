@@ -64,9 +64,9 @@ namespace TradeUp.Server.Controllers
             return Ok(context);
         }
 
-        [HttpGet("context/Datas/{contextId}")]
+        [HttpGet("context/datas/{contextId}")]
         [Authorize]
-        public ActionResult<List<DrawData>> GetContextDatas([FromRoute] string contextId)
+        public ActionResult<List<TombolaData>> GetContextDatas([FromRoute] string contextId)
         {
             if (!IsUserLoggedIn())
                 return Unauthorized();
@@ -82,7 +82,25 @@ namespace TradeUp.Server.Controllers
             return Ok(_drawService.GetContextDrawData(contextId));
         }
 
-        [HttpGet("context/Items/{contextId}")]
+        [HttpGet("context/headers/{contextId}")]
+        [Authorize]
+        public ActionResult<List<TombolaData>> GetContextHeaders([FromRoute] string contextId)
+        {
+            if (!IsUserLoggedIn())
+                return Unauthorized();
+
+            var userId = _userContextService.GetCurrentUserId();
+            var context = _drawService.GetContextById(contextId);
+
+            if (userId is null ||
+                context is null ||
+                userId != context.UserId)
+                return NotFound();
+
+            return Ok(_drawService.GetContextDrawDataHeaders(contextId));
+        }
+
+        [HttpGet("context/items/{contextId}")]
         [Authorize]
         public ActionResult<List<DrawData>> GetContextItems([FromRoute] string contextId)
         {
@@ -97,7 +115,8 @@ namespace TradeUp.Server.Controllers
                 userId != context.UserId)
                 return NotFound();
 
-            return Ok(_drawService.GetContextDrawItem(contextId));
+            var result = _drawService.GetContextDrawItem(contextId);
+            return Ok(result);
         }
 
         [HttpPost("context/save")]
@@ -122,14 +141,14 @@ namespace TradeUp.Server.Controllers
                     newId = Guid.NewGuid().ToString();
                     tries--;
                 }
-                while (!_drawService.IsContextIdAlreadyExist(newContext.ID) && tries > 0);
+                while (_drawService.IsContextIdAlreadyExist(newId) && tries > 0);
             }
             else
             {
                 newId = newContext.ID;
             }
 
-            if (_drawService.IsContextIdAlreadyExist(newContext.ID))
+            if (_drawService.IsContextIdAlreadyExist(newId))
                 return BadRequest("Unable to find free Context Id");
 
             DrawContext context = new DrawContext()

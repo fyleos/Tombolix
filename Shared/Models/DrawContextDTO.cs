@@ -2,7 +2,7 @@
 {
     public class DrawContextDTO
     {
-        public string ID { get; set; } = new Guid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString();
         public string Name { get; set; } = string.Empty;
         public List<string> DrawnItems { get; set; } = new List<string>();
         public TombolaData? DrawInfos { get; set; }

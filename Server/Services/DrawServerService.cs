@@ -16,7 +16,7 @@ namespace TradeUp.Server.Services
 
         public List<DrawContext> GetUserDrawContexts(string userId)
         {
-            if (userId == null || userId != _userContextService.GetCurrentUserId())
+            if (userId is null || userId != _userContextService.GetCurrentUserId())
                 return new List<DrawContext>();
 
             List<DrawContext> results = _dbContext.DrawContexts.Where(c => c.UserId == userId).ToList();
@@ -24,12 +24,36 @@ namespace TradeUp.Server.Services
             return results;
         }
 
-        public List<DrawData> GetContextDrawData(string contextId) 
+        public List<TombolaData> GetContextDrawData(string contextId) 
         {
             if(string.IsNullOrWhiteSpace(contextId) || !_userContextService.IsUserAuthenticated()) 
-                return new List<DrawData>();
+                return new List<TombolaData>();
 
-            return _dbContext.DrawDatas.Where(d => d.DrawContextId == contextId).ToList();
+            var datas = _dbContext.DrawDatas.Where(d => d.DrawContextId == contextId).ToList();
+            var result = new List<TombolaData>();
+
+            datas = datas.OrderBy(r => r.RawId).ToList();
+
+            string rawId = string.Empty;
+            TombolaData dataItem = new TombolaData();
+
+            foreach(var data in datas)
+            {
+                if(rawId != data.RawId)
+                {
+                    rawId = data.RawId;
+                    result.Add(new TombolaData() { Details = dataItem.Details });
+                    dataItem = new TombolaData();
+                }
+                else
+                {
+                    var tmp_new = new List<string>(dataItem.Details);
+                    tmp_new.AddRange(data.DataValue);
+                    dataItem.Details = tmp_new.ToArray();
+                }
+            }
+
+            return result;
         }
 
         public List<DrawResult> GetContextDrawResult(string contextId)
@@ -162,6 +186,30 @@ namespace TradeUp.Server.Services
             }
 
             return tmp_rawId;
+        }
+
+        internal TombolaData GetContextDrawDataHeaders(string contextId)
+        {
+            if (string.IsNullOrWhiteSpace(contextId) || !_userContextService.IsUserAuthenticated())
+                return new TombolaData();
+
+            var datas = _dbContext.DrawDatas.Where(d => d.DrawContextId == contextId).ToList();
+            var result = new TombolaData();
+
+            datas = datas.OrderBy(r => r.RawId).ToList();
+
+            string rawId = datas.First().RawId;
+            var tmp_data_list = datas.Where(d => d.RawId == rawId);
+            List<string> tmp_headers = new List<string>();
+
+            foreach (var data in tmp_data_list)
+            {
+                tmp_headers.Add(data.DataKey);
+            }
+
+            result.Details = tmp_headers.ToArray();
+
+            return result;
         }
     }
 }

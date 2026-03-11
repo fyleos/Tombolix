@@ -20,9 +20,23 @@
                 </button>
             }
 
-            <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp position-absolute end-0 me-4" title="@T.TEXT("RELOAD")"  @onclick="() => NavigationManager.Refresh()">
-                <icon class="oi oi-reload"></icon>
-            </button>
+            <div class="position-absolute end-0 me-4">
+                @code{
+                    string MyDraws = "draws";
+                }
+
+                @if (ViewModel.UserLoggedService.IsUserLogged())
+                {
+                    <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp " title="@T.TEXT("MY_DRAWS")" @onclick="() => NavigationManager.NavigateTo(MyDraws)">
+                        <icon class="oi oi-list"></icon>
+                    </button>
+                }
+
+                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp " title="@T.TEXT("RELOAD")" @onclick="() => NavigationManager.Refresh()">
+                    <icon class="oi oi-reload"></icon>
+                </button>
+            </div>
+
         </div>
 
         @if(ViewModel.IsDrawContextEdition)
@@ -173,6 +187,7 @@
         }
         
         <div class="btn-container">
+
         @if(ViewModel.TombolaDataList is null || ViewModel.IsTombolaDataFileRequired)
         {
             <div class="">
@@ -212,7 +227,7 @@
             {
                 @if( ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
                 {
-                    <p class="text-center colored">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
+                        <p class="text-center colored strong">@T.TEXT("NEXT_DRAW_ITEM")<br /><strong>@ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</strong></p>
                 }
                     <div class="flex-container flex-column">
                     <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
@@ -284,5 +299,4 @@
     
     </div>
 </div>
-
 

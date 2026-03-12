@@ -1,6 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Reflection.Metadata;
-using TradeUp.Client.Pages.Frontend;
 using TradeUp.Shared.Models;
 
 namespace TradeUp.Client.Services

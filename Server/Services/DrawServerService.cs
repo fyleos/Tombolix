@@ -93,9 +93,10 @@ namespace TradeUp.Server.Services
         internal string AddDrawContext(DrawContext context)
         {
             if(_dbContext.DrawContexts.Any(c => c.ID == context.ID))
-                return string.Empty;
-
-            _dbContext.DrawContexts.Add(context);
+                _dbContext.DrawContexts.Update(context);
+            else
+                _dbContext.DrawContexts.Add(context);
+            
             _dbContext.SaveChanges();
             return context.ID;
         }
@@ -122,19 +123,15 @@ namespace TradeUp.Server.Services
 
         internal bool AddContextItem(DrawItem newItem)
         {
-            int tries = 50;
-            while (tries > 0 && _dbContext.DrawDatas.Any(d => d.Id == newItem.Id))
+            if(_dbContext.DrawItems.Any(i =>i.Name == newItem.Name && i.DrawContextId == newItem.DrawContextId))
             {
-                tries--;
-                newItem.Id = Guid.NewGuid().ToString();
+                _dbContext.DrawItems.Update(newItem);
+            }
+            else
+            {
+                _dbContext.DrawItems.Add(newItem);
             }
 
-            if (_dbContext.DrawItems.Any(d => d.Id == newItem.Id))
-            {
-                return false;
-            }
-
-            _dbContext.DrawItems.Add(newItem);
             _dbContext.SaveChanges();
 
             return true;

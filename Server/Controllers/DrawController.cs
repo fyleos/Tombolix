@@ -46,7 +46,7 @@ namespace TradeUp.Server.Controllers
             return Ok(_drawService.GetContextDrawResult(contextId));
         }
 
-        [HttpGet("context/context/{contextId}")]
+        [HttpGet("context/{contextId}")]
         [Authorize]
         public ActionResult<DrawContext> GetContext([FromRoute] string contextId)
         {
@@ -132,36 +132,36 @@ namespace TradeUp.Server.Controllers
                 return BadRequest("Error during user authentication");
             }
 
-            string newId = string.Empty;
-            if (_drawService.IsContextIdAlreadyExist(newContext.ID))
-            {
-                int tries = 50;
-                do
-                {
-                    newId = Guid.NewGuid().ToString();
-                    tries--;
-                }
-                while (_drawService.IsContextIdAlreadyExist(newId) && tries > 0);
-            }
-            else
-            {
-                newId = newContext.ID;
-            }
+            //string newId = string.Empty;
+            //if (_drawService.IsContextIdAlreadyExist(newContext.ID))
+            //{
+            //    int tries = 50;
+            //    do
+            //    {
+            //        newId = Guid.NewGuid().ToString();
+            //        tries--;
+            //    }
+            //    while (_drawService.IsContextIdAlreadyExist(newId) && tries > 0);
+            //}
+            //else
+            //{
+            //    newId = newContext.ID;
+            //}
 
-            if (_drawService.IsContextIdAlreadyExist(newId))
-                return BadRequest("Unable to find free Context Id");
+            //if (_drawService.IsContextIdAlreadyExist(newId))
+            //    return BadRequest("Unable to find free Context Id");
 
             DrawContext context = new DrawContext()
             {
-                ID = newId,
+                ID = newContext.ID,
                 Name = newContext.Name,
                 UserId = userId
             };
 
             string newContextId = _drawService.AddDrawContext(context);
 
-            if(SaveContextDatas(newContext,newContextId) ||
-                SaveContextItems(newContext, newContextId) ||
+            if(SaveContextDatas(newContext,newContextId) &&
+                SaveContextItems(newContext, newContextId) &&
                 SaveContextResults(newContext, newContextId)
                 )
             {
@@ -171,12 +171,12 @@ namespace TradeUp.Server.Controllers
             return BadRequest("Error during save");
         }
 
-        [HttpPut("context/save")]
-        [Authorize]
-        public ActionResult SaveDrawContext([FromBody] DrawContextDTO newContext)
-        {
-            return Ok();
-        }
+        //[HttpPut("context/save")]
+        //[Authorize]
+        //public ActionResult SaveDrawContext([FromBody] DrawContextDTO newContext)
+        //{
+        //    return Ok();
+        //}
 
         private bool SaveContextResults(DrawContextDTO newContext, string newContextId)
         {
@@ -221,7 +221,7 @@ namespace TradeUp.Server.Controllers
                 {
                     DrawContextId = newContextId,
                     Name = item,
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid().ToString()
                 };
 
                 result = _drawService.AddContextItem(newItem);

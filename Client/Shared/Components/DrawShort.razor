@@ -14,7 +14,10 @@
 
     private void OnClick(DrawContextDTO item)
     {
-        DrawService.SetCurrentDrawContext(item);
-        Nav.NavigateTo($"/");
+        Task.Run(async () =>
+        {
+            await DrawService.SetCurrentDrawContextAsync(item);
+            Nav.NavigateTo($"/");
+        });
     }
 }

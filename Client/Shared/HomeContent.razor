@@ -134,7 +134,7 @@
             </div>
         }
 
-        @if (ViewModel.IsChoiceOnScreen)
+        @if(ViewModel.IsChoiceOnScreen)
         {
             <div class="popup-box flex-container text-center">
                 <div class="inner text">
@@ -189,7 +189,9 @@
         <div class="btn-container">
 
         @if(ViewModel.TombolaDataList is null || ViewModel.IsTombolaDataFileRequired)
-        {
+            {
+                <p class="alert-warning">tombola list is null => @(ViewModel.TombolaDataList is null)</p>
+                <p class="alert-warning">file required => @(ViewModel.IsTombolaDataFileRequired)</p>
             <div class="">
                 <div class="inner text-center">
                     <TradeUpLogo/>

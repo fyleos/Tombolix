@@ -74,20 +74,16 @@ namespace TradeUp.Client.ViewModels.Shares
 
             if (_drawService is not null && _drawService.CurrentDraw is not null)
             {
-                LogInfo("ok la");
                 DrawContext = _drawService.CurrentDraw;
                 isTombolaDataFileRequired = false;
             }
             else if(_drawService is not null)
             {
-                LogInfo("plutot la");
                 DrawContext = _drawService.NewDraw();
                 isTombolaDataFileRequired = true;
             }
             else
             {
-
-                LogInfo("en fait la la");
                 string tmp_name = $"tmpdraft-{DateTime.Now:yyyyMMdd-HHmmss}";
                 DrawContext = new DrawContextDTO()
                 {
@@ -100,12 +96,11 @@ namespace TradeUp.Client.ViewModels.Shares
                 isTombolaDataFileRequired = true;
             }
 
-            LogInfo($"nbre de data: {DrawContext.DrawnItemsDatas?.Count}");
-
             OnPropertyChanged(nameof(DrawContext));
             OnPropertyChanged(nameof(DrawContext.DrawInfos));
             OnPropertyChanged(nameof(isTombolaDataFileRequired));
             OnPropertyChanged(nameof(TombolaDataList));
+            Console.WriteLine($"nbre de TombolaDataList : {TombolaDataList?.Count}");
         }
 
         public async Task HandleFileSelected(InputFileChangeEventArgs e)

@@ -123,16 +123,13 @@ namespace TradeUp.Server.Services
 
         internal bool AddContextItem(DrawItem newItem)
         {
-            if(_dbContext.DrawItems.Any(i =>i.Name == newItem.Name && i.DrawContextId == newItem.DrawContextId))
-            {
-                _dbContext.DrawItems.Update(newItem);
-            }
-            else
+            var oldItem = _dbContext.DrawItems.FirstOrDefault(i => i.Name == newItem.Name && i.DrawContextId == newItem.DrawContextId) ?? null;
+
+            if(oldItem is null)
             {
                 _dbContext.DrawItems.Add(newItem);
+                _dbContext.SaveChanges();
             }
-
-            _dbContext.SaveChanges();
 
             return true;
         }
@@ -207,6 +204,50 @@ namespace TradeUp.Server.Services
             result.Details = tmp_headers.ToArray();
 
             return result;
+        }
+
+        internal bool IsIdAlreadyExist(string newId)
+        {
+            var result =
+                !IsContextIdAlreadyExist(newId) &&
+                !IsDataIdAlredyExist(newId) &&
+                !IsDataRawIdAlredyExist(newId) &&
+                !IsResultIdAlreadyExist(newId);
+
+            return result;
+        }
+
+        private bool IsResultIdAlreadyExist(string newId)
+        {
+            return _dbContext.DrawResults.Any(c => c.Id == newId);
+        }
+
+        internal bool DeleteContextAndDatasById(string contextId)
+        {
+            DrawContext? context = _dbContext.DrawContexts.FirstOrDefault(c => c.ID == contextId);
+
+            if (context is null) 
+                return false;
+
+            if(!RemoveRelatedData(contextId)) return false;
+
+            _dbContext.DrawContexts.Remove(context);
+            _dbContext.SaveChanges();
+
+            return true;
+        }
+
+        private bool RemoveRelatedData(string contextId)
+        {
+            var relatedResults = _dbContext.DrawResults.Where(r => r.ContextId == contextId);
+            var relatedDatas = _dbContext.DrawDatas.Where(r => r.DrawContextId == contextId);
+            var relatedItems = _dbContext.DrawItems.Where(r => r.DrawContextId == contextId);
+
+            _dbContext.DrawResults.RemoveRange(relatedResults);
+            _dbContext.DrawDatas.RemoveRange(relatedDatas);
+            _dbContext.DrawItems.RemoveRange(relatedItems);
+
+            return true;
         }
     }
 }

@@ -14,6 +14,28 @@ namespace TradeUp.Server.Controllers
             _drawService = drawService;
         }
 
+        [HttpGet("newId")]
+        public ActionResult<string> GetFreeId()
+        {
+            if (!IsUserLoggedIn())
+                return Unauthorized();
+
+            string newId = string.Empty;
+
+            int tries = 50;
+            do
+            {
+                newId = Guid.NewGuid().ToString();
+                tries--;
+            }
+            while (_drawService.IsIdAlreadyExist(newId) && tries > 0);
+
+            if (_drawService.IsIdAlreadyExist(newId))
+                return BadRequest("Error during new Id generation");
+
+            return Ok(newId);
+        }
+
         [HttpGet("contexts/me")]
         [Authorize]
         public ActionResult<List<DrawContext>> GetUserContexts()
@@ -102,7 +124,7 @@ namespace TradeUp.Server.Controllers
 
         [HttpGet("context/items/{contextId}")]
         [Authorize]
-        public ActionResult<List<DrawData>> GetContextItems([FromRoute] string contextId)
+        public ActionResult<List<string>> GetContextItems([FromRoute] string contextId)
         {
             if (!IsUserLoggedIn())
                 return Unauthorized();
@@ -115,7 +137,8 @@ namespace TradeUp.Server.Controllers
                 userId != context.UserId)
                 return NotFound();
 
-            var result = _drawService.GetContextDrawItem(contextId);
+            var items = _drawService.GetContextDrawItem(contextId);
+            List<string> result = items.Select(x => x.Name).ToList();
             return Ok(result);
         }
 
@@ -131,25 +154,6 @@ namespace TradeUp.Server.Controllers
             {
                 return BadRequest("Error during user authentication");
             }
-
-            //string newId = string.Empty;
-            //if (_drawService.IsContextIdAlreadyExist(newContext.ID))
-            //{
-            //    int tries = 50;
-            //    do
-            //    {
-            //        newId = Guid.NewGuid().ToString();
-            //        tries--;
-            //    }
-            //    while (_drawService.IsContextIdAlreadyExist(newId) && tries > 0);
-            //}
-            //else
-            //{
-            //    newId = newContext.ID;
-            //}
-
-            //if (_drawService.IsContextIdAlreadyExist(newId))
-            //    return BadRequest("Unable to find free Context Id");
 
             DrawContext context = new DrawContext()
             {
@@ -171,12 +175,23 @@ namespace TradeUp.Server.Controllers
             return BadRequest("Error during save");
         }
 
-        //[HttpPut("context/save")]
-        //[Authorize]
-        //public ActionResult SaveDrawContext([FromBody] DrawContextDTO newContext)
-        //{
-        //    return Ok();
-        //}
+        [HttpDelete("context/{contextId}")]
+        public ActionResult<bool> RemoveContextById([FromRoute] string contextId)
+        {
+            if (!IsUserLoggedIn())
+                return Unauthorized();
+
+            DrawContext context = _drawService.GetContextById(contextId);
+
+            if(context.UserId != _userContextService.GetCurrentUserId())
+            {
+                return NotFound("Error: Context not found");
+            }
+
+            bool result = _drawService.DeleteContextAndDatasById(contextId);
+
+            return Ok(result);
+        }
 
         private bool SaveContextResults(DrawContextDTO newContext, string newContextId)
         {

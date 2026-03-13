@@ -211,17 +211,27 @@ namespace TradeUp.Client.ViewModels.Shares
             OnPropertyChanged(nameof(EditableContext));
             OnPropertyChanged(nameof(IsDrawContextEdition));
         }
-
-        public void HandleSaveContext()
+        public void HandleSaveAndCloseContext()
         {
-            //TODO: Save Context in DB if user logged.
+            HandleSaveContext(true);
+        }
+
+        public void HandleSaveContext(bool closeOnSave = false)
+        {
             if(EditableContext == null)
+            {
+                _drawService.SaveContextAsync(DrawContext);
                 return;
+            }
 
             DrawContext = EditableContext.Clone();
 
-            EditableContext = null;
-            IsDrawContextEdition = false;
+            if(closeOnSave)
+            {
+                EditableContext = null;
+                IsDrawContextEdition = false;
+            }
+
             OnPropertyChanged(nameof(EditableContext));
             OnPropertyChanged(nameof(IsDrawContextEdition));
 
@@ -256,17 +266,20 @@ namespace TradeUp.Client.ViewModels.Shares
                 Task.Run(async () =>
                 {
                     await Task.Delay(2000);
-                    TombolaIsProgress = false;
 
                     ResultIndex = result;
-                    OnPropertyChanged(nameof(TombolaIsProgress));
-                    OnPropertyChanged(nameof(ResultIndex));
-
 
                     var tmp_result = new List<ResultDTO>(Results);
                     tmp_result.Add(new ResultDTO { TirageIndex = Results.Count + 1, Info = TombolaDataList?[ResultIndex ?? 0] });
 
                     Results = tmp_result;
+
+                    HandleSaveContext();
+
+                    TombolaIsProgress = false;
+
+                    OnPropertyChanged(nameof(TombolaIsProgress));
+                    OnPropertyChanged(nameof(ResultIndex));
                 });
             }
 
@@ -278,6 +291,7 @@ namespace TradeUp.Client.ViewModels.Shares
             if (e.Key == "Enter")
             {
                 AddItem();
+                HandleSaveContext();
             }
         }
 

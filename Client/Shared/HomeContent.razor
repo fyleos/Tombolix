@@ -41,7 +41,7 @@
 
         @if(ViewModel.IsDrawContextEdition)
         {
-            <EditForm Model="@ViewModel.DrawContext" OnValidSubmit="ViewModel.HandleSaveContext">
+            <EditForm Model="@ViewModel.DrawContext" OnValidSubmit="ViewModel.HandleSaveAndCloseContext">
                 <DataAnnotationsValidator />
 
                 <div class="module mg-b-10" style="border: 1px solid #7000ff;">
@@ -190,8 +190,6 @@
 
         @if(ViewModel.TombolaDataList is null || ViewModel.IsTombolaDataFileRequired)
             {
-                <p class="alert-warning">tombola list is null => @(ViewModel.TombolaDataList is null)</p>
-                <p class="alert-warning">file required => @(ViewModel.IsTombolaDataFileRequired)</p>
             <div class="">
                 <div class="inner text-center">
                     <TradeUpLogo/>

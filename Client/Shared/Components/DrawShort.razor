@@ -1,10 +1,15 @@
 ﻿@inject NavigationManager Nav
 @inject DrawService DrawService
+@inject UserLoggedService userLoggedService
 
 @if(Draw is not null)
 {
-    <div class="module cursor-pointer" @onclick="() => OnClick(Draw)" >
-        <strong>@Draw.Name</strong><icon class="oi oi-bell position-absolute top-50 translate-middle end-0 me-4 colored" title="Go" />
+    <div class="module ">
+        <div class="inner cursor-pointer" @onclick="() => OnClick(Draw)">
+            <strong>@Draw.Name</strong>
+            <icon class="oi oi-bell position-absolute top-50 translate-middle end-0 me-5 colored" title="Go" />
+        </div>
+        <icon class="cursor-pointer oi oi-trash position-absolute top-50 translate-middle end-0 me-2 colored" title="Remove" @onclick="RemoveContext" />
     </div>
 }
 
@@ -19,5 +24,16 @@
             await DrawService.SetCurrentDrawContextAsync(item);
             Nav.NavigateTo($"/");
         });
+    }
+
+
+    public void RemoveContext()
+    {
+        if (userLoggedService.IsUserLogged() && Draw?.ID != new Guid().ToString())
+        {
+            DrawService.RemoveContextAsync(Draw!);
+
+            Draw = null;
+        }
     }
 }

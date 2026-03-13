@@ -46,6 +46,26 @@ namespace TradeUp.Client.Services
             return;
         }
 
+        public async void RemoveContextAsync(DrawContextDTO context)
+        {
+            if (context == null || !_userLoggedService.IsUserLogged())
+            {
+                return;
+            }
+
+            var query = $"{API_V1_BASE_ROUTE}/draw/context/{context.ID}";
+            var response = await _httpClient.DeleteAsync(query);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var message = response.Content.ReadAsStringAsync();
+                _notificationService.AddUserErrorNotification($"Error: {message}");
+                return;
+            }
+
+            return;
+        }
+
         internal async Task RefreshUserDrawsAsync()
         {
             var query = $"{API_V1_BASE_ROUTE}/draw/contexts/me";
@@ -65,36 +85,39 @@ namespace TradeUp.Client.Services
         {
             string datasQuery = $"{API_V1_BASE_ROUTE}/draw/context/datas/{context.ID}";
             context.DrawnItemsDatas = await _httpClient.GetFromJsonAsync<List<TombolaData>>(datasQuery) ?? new List<TombolaData>();
+            Console.WriteLine($"Data count: {context.DrawnItemsDatas.Count}");
 
             string itemsQuery = $"{API_V1_BASE_ROUTE}/draw/context/items/{context.ID}";
             context.DrawnItems = await _httpClient.GetFromJsonAsync<List<string>>(itemsQuery) ?? new List<string>();
+            Console.WriteLine($"Items count: {context.DrawnItems.Count}");
 
             string resultsQuery = $"{API_V1_BASE_ROUTE}/draw/context/results/{context.ID}";
             context.Results = await _httpClient.GetFromJsonAsync<List<ResultDTO>>(resultsQuery) ?? new List<ResultDTO>();
+            Console.WriteLine($"result count: {context.Results.Count}");
 
             string headersQuery = $"{API_V1_BASE_ROUTE}/draw/context/headers/{context.ID}";
             context.DrawInfos = await _httpClient.GetFromJsonAsync<TombolaData>(headersQuery) ?? new TombolaData();
-
-            Console.WriteLine($"Data count: {context.DrawnItemsDatas.Count}");
-            Console.WriteLine($"Items count: {context.DrawnItems.Count}");
-            Console.WriteLine($"result count: {context.Results.Count}");
             Console.WriteLine($"header count: {context.DrawInfos.Details.Length}");
 
+
             return;
-        }
-
-        private TombolaData? DefineDataHeaders(List<TombolaData> drawnItemsDatas)
-        {
-            foreach (var info in drawnItemsDatas) 
-            {
-            }
-            return new TombolaData();
-
         }
 
         internal DrawContextDTO NewDraw()
         {
             string tmp_name = $"draft-{DateTime.Now:yyyyMMdd-HHmmss}";
+
+            string? tmp_id = null;
+
+            Task.Run(async () =>
+            {
+                tmp_id = await GetNewIdAsync();
+            });
+
+            if ( string.IsNullOrEmpty(tmp_id)) 
+            {
+                tmp_id = new Guid().ToString();
+            }
 
             var ctx = new DrawContextDTO()
             {
@@ -105,7 +128,23 @@ namespace TradeUp.Client.Services
             };
 
             CurrentDraw = ctx;
+
+            if(_userLoggedService.IsUserLogged())
+            {
+                SaveContextAsync(CurrentDraw);
+            }
+
             return CurrentDraw;
+        }
+
+        private async Task<string> GetNewIdAsync()
+        {
+            string tmp_id = string.Empty;
+
+            string query = $"{API_V1_BASE_ROUTE}/draw/newId";
+            tmp_id = await _httpClient.GetFromJsonAsync<string>(query) ?? string.Empty;
+
+            return tmp_id;
         }
     }
 }

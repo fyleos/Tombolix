@@ -1,6 +1,10 @@
-﻿using TradeUp.Server.Data;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using NuGet.Packaging.Signing;
+using System.Linq;
+using TradeUp.Server.Data;
 using TradeUp.Server.Models;
 using TradeUp.Shared.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TradeUp.Server.Services
 {
@@ -43,25 +47,50 @@ namespace TradeUp.Server.Services
                 {
                     rawId = data.RawId;
                     result.Add(new TombolaData() { Details = dataItem.Details });
+
                     dataItem = new TombolaData();
+;
                 }
-                else
-                {
-                    var tmp_new = new List<string>(dataItem.Details);
-                    tmp_new.AddRange(data.DataValue);
-                    dataItem.Details = tmp_new.ToArray();
-                }
+
+                var tmp_new = new List<string>(dataItem.Details);
+                tmp_new.AddRange(data.DataValue);
+                dataItem.Details = tmp_new.ToArray();
             }
 
             return result;
         }
 
-        public List<DrawResult> GetContextDrawResult(string contextId)
+        public List<ResultDTO> GetContextDrawResult(string contextId)
         {
             if (string.IsNullOrWhiteSpace(contextId) || !_userContextService.IsUserAuthenticated())
-                return new List<DrawResult>();
+                return new List<ResultDTO>();
 
-            return _dbContext.DrawResults.Where(d => d.ContextId == contextId).ToList();
+            var tmp_results = _dbContext.DrawResults.Where(d => d.ContextId == contextId).ToList();
+            var result = new List<ResultDTO>();
+
+            foreach (var tmpResult in tmp_results)
+            {
+                var rawId = tmpResult.DataRawId;
+                var datasItem = _dbContext.DrawDatas.Where(d => d.RawId == rawId);
+
+                if (datasItem is not null)
+                {
+                    var details = new List<string>();
+
+                    foreach (var data in datasItem)
+                    {
+                        details.Add(data.DataValue);
+                    }
+
+                    result.Add(new ResultDTO()
+                    {
+                        Info = new TombolaData() { Details = details.ToArray() },
+                        TirageIndex = tmpResult.TirageIndex
+                    });
+                }
+            };
+
+            return result;
         }
 
         public List<DrawItem> GetContextDrawItem(string contextId)
@@ -103,13 +132,6 @@ namespace TradeUp.Server.Services
 
         internal bool AddContextData(DrawData newData)
         {
-            int tries = 50;
-            while (tries > 0 && _dbContext.DrawDatas.Any(d => d.Id == newData.Id))
-            {
-                tries--;
-                newData.Id = Guid.NewGuid().ToString();
-            }
-
             if(_dbContext.DrawDatas.Any(d => d.Id == newData.Id))
             {
                 return false;
@@ -164,22 +186,42 @@ namespace TradeUp.Server.Services
             return _dbContext.DrawDatas.Any(d => d.Id == dataId);
         }
 
-        internal string GetDataRawId(TombolaData? info)
+        internal string GetDataRawId(TombolaData? info, string contextId)
         {
-            string tmp_rawId = string.Empty;
+            if(info is null || info!.Details.Length == 0)
+                return string.Empty;
 
-            foreach (var data in info.Details)
+            int tries = 100;
+            string tmp_rawId; 
+            string result = string.Empty;
+
+            while (tries > 0 && result == string.Empty)
             {
-                if (data is null)
-                    continue;
+                tries--;
+                List<DrawData> possibleResults = _dbContext.DrawDatas.Where(d => d.DataValue == info!.Details[0] && d.DrawContextId == contextId).ToList();
 
-                string tmp_tmp_rawId = _dbContext.DrawDatas.FirstOrDefault(d => d.DataValue == data).RawId;
+                if (possibleResults.Any()) 
+                {
+                    for(int i = possibleResults.Count() - 1; i >= 0; i--)
+                    {
+                        var possibleResult = possibleResults[i];
+                        if (!info.Details.Any(d => d == possibleResult.DataValue))
+                        {
+                            string wrongRawId = possibleResult.RawId;
 
-                if(tmp_tmp_rawId != tmp_rawId)
-                    tmp_rawId = tmp_tmp_rawId;
+                            possibleResults.RemoveAll(d => d.RawId == wrongRawId);
+                        }
+                    }
+
+                    result = possibleResults.First().RawId;
+                }
+                else
+                {
+                    break;
+                }
             }
 
-            return tmp_rawId;
+            return result;
         }
 
         internal TombolaData GetContextDrawDataHeaders(string contextId)

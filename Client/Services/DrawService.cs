@@ -98,8 +98,6 @@ namespace TradeUp.Client.Services
             string headersQuery = $"{API_V1_BASE_ROUTE}/draw/context/headers/{context.ID}";
             context.DrawInfos = await _httpClient.GetFromJsonAsync<TombolaData>(headersQuery) ?? new TombolaData();
             Console.WriteLine($"header count: {context.DrawInfos.Details.Length}");
-
-
             return;
         }
 

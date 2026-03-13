@@ -9,7 +9,7 @@
 
             @if(!ViewModel.IsChoiceOnScreen && ViewModel.TombolaDataList is not null)
             {
-                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_CSV")" @onclick="() => ViewModel.IsTombolaDataFileRequired = !ViewModel.IsTombolaDataFileRequired">
+                <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_CSV")" @onclick="() => ViewModel.AskNewFile()">
                     <icon class="oi oi-data-transfer-upload"></icon>
                 </button>
                 <button type="button" disabled="@ViewModel.TombolaIsProgress" class="trsp" title="@T.TEXT("SELECT_INFO_TO_DISPLAY")"  @onclick="() => ViewModel.AskChoice()">
@@ -38,265 +38,273 @@
             </div>
 
         </div>
-
-        @if(ViewModel.IsDrawContextEdition)
+        @switch(ViewModel.AppScreen)
         {
-            <EditForm Model="@ViewModel.DrawContext" OnValidSubmit="ViewModel.HandleSaveAndCloseContext">
-                <DataAnnotationsValidator />
+            case Enums.AppScreen.SetInfo:
+                <div class="popup-box flex-container text-center">
+                    <div class="inner text">
+                        <h2>@T.TEXT("SELECT_PRIMARY_INFO")</h2>
+                        <p>@T.TEXT("TWO_SELECTION_POSSIBLE")</p>
 
-                <div class="module mg-b-10" style="border: 1px solid #7000ff;">
-        
-                    <div class="mb-4">
-                        <label class="form-label fw-bold" >@T.TEXT("DRAW_NAME")</label>
-                        <InputText @bind-Value="ViewModel.EditableContext!.Name" class="form-control bg-dark text-white border-secondary" placeholder="@T.TEXT("PLACEHOLDER_DRAW_NAME")" />
-                        <ValidationMessage For="@(() => ViewModel.DrawContext.Name)" />
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label fw-bold" >@T.TEXT("ITEM_TO_ADD")</label>
-                        <div class="input-group">
-                            @* On utilise @onkeydown:preventDefault pour éviter que "Entrée" ne soumette tout le formulaire *@
-                            <input type="text" 
-                                   @bind="ViewModel.NewItemName" 
-                                   @bind:event="oninput"
-                                   @onkeydown="ViewModel.HandleKeyDown"
-                                   class="form-control bg-dark text-white border-secondary" 
-                                   placeholder="@T.TEXT("PLACEHOLDER_ENTER_GIFT_OR_NAME")" />
-                            <button type="button" class="btn btn-info" @onclick="ViewModel.AddItem">
-                                <i class="oi oi-plus"></i> Ajouter
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mt-3" style="max-height: 250px; overflow-y: auto;">
-                        @if (ViewModel.EditableContext!.DrawnItems == null || !ViewModel.EditableContext!.DrawnItems.Any())
-                        {
-                            <div class="alert alert-secondary py-2 text-center" style="opacity: 0.6;">
-                                <small>Aucun item ajouté pour le moment</small>
-                            </div>
+                        @{
+                            var details = ViewModel.TombolaDataHeader?.Details;
+                            int count = details?.Length ?? 0;
                         }
-                        else
+
+                        @if (details != null)
                         {
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach (var item in ViewModel.EditableContext!.DrawnItems)
-                                {
-                                    <span class="badge d-flex align-items-center p-2" 
-                                          style="background-color: #3c3c3c; border: 1px solid #7000ff; font-size: 0.9rem;">
-                                        @item
-                                        <button type="button" 
-                                                class="btn-close btn-close-white ms-2" 
-                                                style="font-size: 0.6rem;" 
-                                                @onclick="() => ViewModel.RemoveItem(item)">
-                                        </button>
-                                    </span>
-                                }
-                            </div>
-                        }
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-4 w-100 shadow" style="background-color: #7000ff; border: none; font-weight: bold;">
-                        <i class="oi oi-check"></i> @T.TEXT("SAVE")
-                    </button>
-                </div>
-            </EditForm>
-        }
-
-        @if(ViewModel.ResultIndex is not null && !ViewModel.TombolaIsProgress)
-        {
-            int index = ViewModel.ResultIndex ?? 0;
-            int primary = ViewModel.PrimaryInfoColumnIndex ?? -1;
-            int secondary = ViewModel.SecondaryInfoColumnIndex ?? -1;
-            int resultsCount = ViewModel.Results.Count -1;
-
-            @if(ViewModel.DrawContext.DrawnItems.Count > 0 && ViewModel.DrawContext.DrawnItems.Count > resultsCount && resultsCount >= 0)
-            {
-                <h1 class="text-center">@ViewModel.DrawContext.DrawnItems[resultsCount]</h1>
-            }
-            else if (ViewModel.DrawContext.DrawnItems.Count > 0 && ViewModel.DrawContext.DrawnItems.Count <= resultsCount)
-            {
-                <p class="text-center">@T.TEXT("DRAW_FINISHED")</p>
-            }
-
-            <div class="flex-container">
-                <div class="result-card ">
-                    <div class="inner">
-                        @if(ViewModel.TombolaDataList.Count > index)
-                        {
-                            @if (primary >= 0)
+                            @for (int i = 0; i < count - 1; i++)
                             {
-                                <p class="primary">@ViewModel.TombolaDataList[index].Details[primary]</p>
-                            }
-                            @if(secondary >= 0)
-                            {
-                                 <p>@ViewModel.TombolaDataList[index].Details[secondary]</p>
-                            }
-                        }
-                    </div>
-                </div>
-            </div>
-        }
+                                var index = i;
+                                var detailValue = details[index];
+                                string btnclass = "";
 
-        @if(ViewModel.IsChoiceOnScreen)
-        {
-            <div class="popup-box flex-container text-center">
-                <div class="inner text">
-                    <h2>@T.TEXT("SELECT_PRIMARY_INFO")</h2>
-                    <p>@T.TEXT("TWO_SELECTION_POSSIBLE")</p>
-
-                    @{
-                        var details = ViewModel.TombolaDataHeader?.Details;
-                        int count = details?.Length ?? 0;
-                    }
-
-                    @if (details != null)
-                    {
-                        @for (int i = 0; i < count - 1; i++)
-                        {
-                            var index = i; 
-                            var detailValue = details[index];
-                            string btnclass= "";
-
-                            @if(ViewModel.PrimaryInfoColumnIndex == index || ViewModel.SecondaryInfoColumnIndex == index)
-                            {
-                                btnclass = " selected ";
-                            }
-
-                            <button type="button"
-                                    class="btn btn-secondary @btnclass"
-                                    @onclick="() => ViewModel.HandleInfoSelected(index)"
-                                    @ondblclick="() => ViewModel.HandlePrimaryInfoSelected(index)">
-
-                                <span>@detailValue</span>
-
-                                @if (ViewModel.PrimaryInfoColumnIndex == index)
+                                @if (ViewModel.PrimaryInfoColumnIndex == index || ViewModel.SecondaryInfoColumnIndex == index)
                                 {
-                                    <span class="selected-tag primary">1</span>
+                                    btnclass = " selected ";
                                 }
-                                else if(ViewModel.SecondaryInfoColumnIndex == index)
-                                {
-                                    <span class="selected-tag secondary">2</span>
-                                }
-                            </button>
-                        }
-                        <div class="btn-box">
-                            <button type="button" class="btn btn-primary" @onclick="() => ViewModel.ValidChoice()">
-                                <span>@T.TEXT("CHOICE_DONE")</span>
-                            </button>
-                        </div>
-                    }
-                </div>
-            </div>
-        }
-        
-        <div class="btn-container">
 
-        @if(ViewModel.TombolaDataList is null || ViewModel.IsTombolaDataFileRequired)
-            {
-            <div class="">
-                <div class="inner text-center">
-                    <TradeUpLogo/>
-                    <p class="colored">@T.TEXT("APP_SLOGAN")</p>
-                    <div class="upload-container">
-                        
-                        <div class="btn-box">
-                            <label for="fileInput" class="ui-action cursor-pointer">
-                                <i class="oi oi-cloud-upload"></i>@T.TEXT("SELECT_CSV")
-                            </label>
-                        </div>
+                                <button type="button"
+                                        class="btn btn-secondary @btnclass"
+                                        @onclick="() => ViewModel.HandleInfoSelected(index)"
+                                        @ondblclick="() => ViewModel.HandlePrimaryInfoSelected(index)">
 
-                        @if(ViewModel.TombolaDataList is not null)
-                        {
-                            <button type="button" class="btn btn-secondary" @T.TEXT("USE_PREVIOUS_FILE") @onclick="() => ViewModel.IsTombolaDataFileRequired = false">
-                                <icon class="oi oi-check"></icon>
-                            </button>
-                        }
+                                    <span>@detailValue</span>
 
-                        <InputFile id="fileInput" OnChange="ViewModel.HandleFileSelected" accept=".csv" style="display:none" />
-
-
-                        @if (@ViewModel.isProcessing)
-                        {
-                            <p><em>@T.TEXT("LOADING")</em></p>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-
-        else if(!ViewModel.TombolaIsProgress && !ViewModel.IsChoiceOnScreen)
-        {
-            if (ViewModel.DrawContext?.DrawnItems?.Count == 0 || ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
-            {
-                @if( ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
-                {
-                        <p class="text-center colored strong">@T.TEXT("NEXT_DRAW_ITEM")<br /><strong>@ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</strong></p>
-                }
-                    <div class="flex-container flex-column">
-                    <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
-                        <span>@T.TEXT("GO")</span>
-                    </button>
-
-                        @if(ViewModel.Results.Count == 0)
-                        {
-                            <div class="btn-container">
-                                <button class="ui-action" type="button" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")"  @onclick="() => ViewModel.SetUpDrawContext()">
-                                    <span>@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")</span>
+                                    @if (ViewModel.PrimaryInfoColumnIndex == index)
+                                    {
+                                        <span class="selected-tag primary">1</span>
+                                    }
+                                    else if (ViewModel.SecondaryInfoColumnIndex == index)
+                                    {
+                                        <span class="selected-tag secondary">2</span>
+                                    }
+                                </button>
+                            }
+                            <div class="btn-box">
+                                <button type="button" class="btn btn-primary" @onclick="() => ViewModel.ValidChoice()">
+                                    <span>@T.TEXT("CHOICE_DONE")</span>
                                 </button>
                             </div>
                         }
                     </div>
-            }
-        }
-        else if(ViewModel.TombolaIsProgress)
-        {
-            <div class="flex-container">
-                <LuckyLoader />
-            </div>
-            
-            if (ViewModel.DrawContext.DrawnItems.Count == 0 || ViewModel.DrawContext.DrawnItems.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
-            {                
-                @if (ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
-                    {
-                        <p class="text-center colored">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
-                    }
-                    <div class="flex-container">
-                    <button class="ui-action" type="button" disabled @onclick="() => ViewModel.RandomChoice()">
-                        <span>@T.TEXT("GO")</span>
-                    </button>
                 </div>
-            }
-        }
+                break;
 
-        </div>
-        @if(ViewModel.Results.Count > 0)
-        {
-            <div class="module">
-                <div class="inner">
-                    <h2>@T.TEXT("LAST_RESULTS")</h2>
-                    <div class="results-list">
-                        @foreach(var result in ViewModel.Results)
+            case Enums.AppScreen.EditDraw:
+                @if(ViewModel.IsDrawContextEdition)
+                {
+                    <EditForm Model="@ViewModel.DrawContext" OnValidSubmit="ViewModel.HandleSaveAndCloseContext">
+                        <DataAnnotationsValidator />
+
+                        <div class="module mg-b-10" style="border: 1px solid #7000ff;">
+        
+                            <div class="mb-4">
+                                <label class="form-label fw-bold" >@T.TEXT("DRAW_NAME")</label>
+                                <InputText @bind-Value="ViewModel.EditableContext!.Name" class="form-control bg-dark text-white border-secondary" placeholder="@T.TEXT("PLACEHOLDER_DRAW_NAME")" />
+                                <ValidationMessage For="@(() => ViewModel.DrawContext.Name)" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label fw-bold" >@T.TEXT("ITEM_TO_ADD")</label>
+                                <div class="input-group">
+                                    @* On utilise @onkeydown:preventDefault pour éviter que "Entrée" ne soumette tout le formulaire *@
+                                    <input type="text" 
+                                            @bind="ViewModel.NewItemName" 
+                                            @bind:event="oninput"
+                                            @onkeydown="ViewModel.HandleKeyDown"
+                                            class="form-control bg-dark text-white border-secondary" 
+                                            placeholder="@T.TEXT("PLACEHOLDER_ENTER_GIFT_OR_NAME")" />
+                                    <button type="button" class="btn btn-info" @onclick="ViewModel.AddItem">
+                                        <i class="oi oi-plus"></i> Ajouter
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-3" style="max-height: 250px; overflow-y: auto;">
+                                @if (ViewModel.EditableContext!.DrawnItems == null || !ViewModel.EditableContext!.DrawnItems.Any())
+                                {
+                                    <div class="alert alert-secondary py-2 text-center" style="opacity: 0.6;">
+                                        <small>Aucun item ajouté pour le moment</small>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var item in ViewModel.EditableContext!.DrawnItems)
+                                        {
+                                            <span class="badge d-flex align-items-center p-2" 
+                                                    style="background-color: #3c3c3c; border: 1px solid #7000ff; font-size: 0.9rem;">
+                                                @item
+                                                <button type="button" 
+                                                        class="btn-close btn-close-white ms-2" 
+                                                        style="font-size: 0.6rem;" 
+                                                        @onclick="() => ViewModel.RemoveItem(item)">
+                                                </button>
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-4 w-100 shadow" style="background-color: #7000ff; border: none; font-weight: bold;">
+                                <i class="oi oi-check"></i> @T.TEXT("SAVE")
+                            </button>
+                        </div>
+                    </EditForm>
+                }
+                break;
+
+            case Enums.AppScreen.LuckyDraw:
+                <div class="btn-box">
+                    @if (ViewModel.ResultIndex is not null && !ViewModel.TombolaIsProgress)
+                    {
+                        int index = ViewModel.ResultIndex ?? 0;
+                        int primary = ViewModel.PrimaryInfoColumnIndex ?? -1;
+                        int secondary = ViewModel.SecondaryInfoColumnIndex ?? -1;
+                        int resultsCount = ViewModel.Results.Count - 1;
+
+                        @if (ViewModel.DrawContext.DrawnItems.Count > 0 && ViewModel.DrawContext.DrawnItems.Count > resultsCount && resultsCount >= 0)
                         {
-                            int resultIndex = ViewModel.Results?.IndexOf(result)?? -1;
-                            <div class="result-item">
-                                <p class="primary colored"><span class="result-index">@T.TEXT("TIRAGE_NUM") @result.TirageIndex =></span>&nbsp
-                                    @if(resultIndex >= 0 && ViewModel.DrawContext?.DrawnItems.Count > resultIndex && ViewModel.DrawContext?.DrawnItems[resultIndex] is not null)
+                            <h1 class="text-center">@ViewModel.DrawContext.DrawnItems[resultsCount]</h1>
+                        }
+                        else if (ViewModel.DrawContext.DrawnItems.Count > 0 && ViewModel.DrawContext.DrawnItems.Count <= resultsCount)
+                        {
+                            <p class="text-center">@T.TEXT("DRAW_FINISHED")</p>
+                        }
+
+                        <div class="flex-container">
+                            <div class="result-card ">
+                                <div class="inner">
+                                    @if (ViewModel.TombolaDataList.Count > index)
                                     {
-                                        <span>(@ViewModel.DrawContext?.DrawnItems[resultIndex]) </span>
+                                        @if (primary >= 0)
+                                        {
+                                            <p class="primary">@ViewModel.TombolaDataList[index].Details[primary]</p>
+                                        }
+                                        @if (secondary >= 0)
+                                        {
+                                            <p>@ViewModel.TombolaDataList[index].Details[secondary]</p>
+                                        }
                                     }
-                                    @if (ViewModel.PrimaryInfoColumnIndex is not null)
-                                    {
-                                        <span class="result-primary">@result.Info?.Details[ViewModel.PrimaryInfoColumnIndex??0]&nbsp</span>
-                                    }
-                                    @if(ViewModel.SecondaryInfoColumnIndex is not null)
-                                    {
-                                        <span class="result-primary">@result.Info?.Details[ViewModel.SecondaryInfoColumnIndex??0]&nbsp</span>
-                                    }
-                                </p>    
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    @if (!ViewModel.TombolaIsProgress && !ViewModel.IsChoiceOnScreen)
+                    {
+                        if (ViewModel.DrawContext?.DrawnItems?.Count == 0 || ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
+                        {
+                            if (ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
+                            {
+                                <p class="text-center colored strong">@T.TEXT("NEXT_DRAW_ITEM")<br /><strong>@ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</strong></p>
+                            }
+                            <div class="flex-container flex-column">
+                                <button class="ui-action" type="button" @onclick="() => ViewModel.RandomChoice()">
+                                    <span>@T.TEXT("GO")</span>
+                                </button>
+
+                                @if (ViewModel.Results.Count == 0)
+                                {
+                                    <div class="btn-container">
+                                        <button class="ui-action" type="button" title="@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")" @onclick="() => ViewModel.SetUpDrawContext()">
+                                            <span>@T.TEXT("EDIT_CONTEXT_AND_ADD_PRIZE")</span>
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         }
+                    }
+                    else if (ViewModel.TombolaIsProgress)
+                    {
+                        <div class="flex-container">
+                            <LuckyLoader />
+                        </div>
+
+                        if (ViewModel.DrawContext.DrawnItems.Count == 0 || ViewModel.DrawContext.DrawnItems.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
+                        {
+                            @if (ViewModel.DrawContext?.DrawnItems?.Count >= 0 && ViewModel.DrawContext.DrawnItems.Count > ViewModel.DrawContext.Results.Count)
+                            {
+                                <p class="text-center colored">@T.TEXT("NEXT_DRAW_ITEM") @ViewModel.DrawContext?.DrawnItems[ViewModel.DrawContext.Results.Count]</p>
+                            }
+                            <div class="flex-container">
+                                <button class="ui-action" type="button" disabled @onclick="() => ViewModel.RandomChoice()">
+                                    <span>@T.TEXT("GO")</span>
+                                </button>
+                            </div>
+                        }
+                    }
+                </div>
+                @if (ViewModel.Results.Count > 0)
+                {
+                    <div class="module">
+                        <div class="inner">
+                            <h2>@T.TEXT("LAST_RESULTS")</h2>
+                            <div class="results-list">
+                                @foreach (var result in ViewModel.Results)
+                                {
+                                    int resultIndex = ViewModel.Results?.IndexOf(result) ?? -1;
+                                    <div class="result-item">
+                                        <p class="primary colored">
+                                            <span class="result-index">@T.TEXT("TIRAGE_NUM") @result.TirageIndex =></span>&nbsp
+                                            @if (resultIndex >= 0 && ViewModel.DrawContext?.DrawnItems.Count > resultIndex && ViewModel.DrawContext?.DrawnItems[resultIndex] is not null)
+                                            {
+                                                <span>(@ViewModel.DrawContext?.DrawnItems[resultIndex]) </span>
+
+                                                @if (ViewModel.PrimaryInfoColumnIndex is not null && result.Info.Details.Length > ViewModel.PrimaryInfoColumnIndex)
+                                                {
+                                                    <span class="result-primary" data-primaryIndex="@ViewModel.PrimaryInfoColumnIndex">@(result.Info?.Details[ViewModel.PrimaryInfoColumnIndex ?? 0] ?? "")&nbsp</span>
+                                                }
+                                                @if (ViewModel.SecondaryInfoColumnIndex is not null && result.Info.Details.Length > ViewModel.SecondaryInfoColumnIndex)
+                                                {
+                                                    <span class="result-secondary" data-secondaryIndex="@ViewModel.SecondaryInfoColumnIndex">@(result.Info?.Details[ViewModel.SecondaryInfoColumnIndex ?? 0] ?? "")&nbsp</span>
+                                                }
+                                            }
+
+                                        </p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                break;
+
+            case Enums.AppScreen.LoadFile:
+            default:
+                <div class="btn-container">
+                    <div class="">
+                        <div class="inner text-center">
+                            <TradeUpLogo />
+                            <p class="colored">@T.TEXT("APP_SLOGAN")</p>
+                            <div class="upload-container">
+
+                                <div class="btn-box">
+                                    <label for="fileInput" class="ui-action cursor-pointer">
+                                        <i class="oi oi-cloud-upload"></i>@T.TEXT("SELECT_CSV")
+                                    </label>
+                                </div>
+
+                                @if (ViewModel.TombolaDataList is not null)
+                                {
+                                    <button type="button" class="btn btn-secondary" title="@T.TEXT("USE_PREVIOUS_FILE")" @onclick="() => ViewModel.AskChoice()">
+                                        <icon class="oi oi-check"></icon>
+                                    </button>
+                                }
+
+                                <InputFile id="fileInput" OnChange="ViewModel.HandleFileSelected" accept=".csv" style="display:none" />
+
+
+                                @if (@ViewModel.isProcessing)
+                                {
+                                    <p><em>@T.TEXT("LOADING")</em></p>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            break;
+
         }
-    
     </div>
 </div>
 

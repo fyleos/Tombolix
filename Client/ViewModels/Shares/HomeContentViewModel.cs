@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Text;
+using TradeUp.Client.Enums;
 using TradeUp.Client.Services;
 using TradeUp.Shared.Models;
 
@@ -9,6 +10,8 @@ namespace TradeUp.Client.ViewModels.Shares
     public class HomeContentViewModel : BaseViewModel
     {
         private DrawService _drawService;
+
+        public AppScreen AppScreen { get; private set; } = AppScreen.LoadFile;
 
         public HomeContentViewModel(DrawService drawService)
         {
@@ -75,12 +78,14 @@ namespace TradeUp.Client.ViewModels.Shares
             if (_drawService is not null && _drawService.CurrentDraw is not null)
             {
                 DrawContext = _drawService.CurrentDraw;
-                isTombolaDataFileRequired = false;
+                UpdateAppScreen(AppScreen.SetInfo);
             }
             else if(_drawService is not null)
             {
                 DrawContext = _drawService.NewDraw();
                 isTombolaDataFileRequired = true;
+
+                UpdateAppScreen(AppScreen.LoadFile);
             }
             else
             {
@@ -94,17 +99,19 @@ namespace TradeUp.Client.ViewModels.Shares
                 };
 
                 isTombolaDataFileRequired = true;
+                UpdateAppScreen(AppScreen.LoadFile);
             }
 
+            OnPropertyChanged(nameof(Results));
             OnPropertyChanged(nameof(DrawContext));
             OnPropertyChanged(nameof(DrawContext.DrawInfos));
             OnPropertyChanged(nameof(isTombolaDataFileRequired));
             OnPropertyChanged(nameof(TombolaDataList));
-            Console.WriteLine($"nbre de TombolaDataList : {TombolaDataList?.Count}");
         }
 
         public async Task HandleFileSelected(InputFileChangeEventArgs e)
         {
+            bool isErrored = false;
             isProcessing = true;
             var file = e.File;
             DrawContext.DrawnItemsDatas = new List<TombolaData>();
@@ -137,16 +144,29 @@ namespace TradeUp.Client.ViewModels.Shares
             }
             catch (Exception ex)
             {
+                isErrored = true;
                 NotificationService.AddUserErrorNotification($"Erreur : {ex.Message}");
             }
             finally
             {
-                IsTombolaDataFileRequired = false;
-                IsChoiceAsked = true;
+                if (!isErrored)
+                {
+                    IsTombolaDataFileRequired = false;
+                    IsChoiceAsked = true;
+
+                    UpdateAppScreen(AppScreen.SetInfo);
+                }
+
                 OnPropertyChanged(nameof(TombolaDataList)); 
                 OnPropertyChanged(nameof(IsChoiceOnScreen));
                 isProcessing = false;
             }
+        }
+
+        private void UpdateAppScreen(AppScreen newScreen)
+        {
+            AppScreen = newScreen;
+            OnPropertyChanged(nameof(AppScreen));
         }
 
         private async Task ProcessCsvLine(string[] columns)
@@ -174,6 +194,7 @@ namespace TradeUp.Client.ViewModels.Shares
             else
                 SecondaryInfoColumnIndex = columnIndex;
 
+            OnPropertyChanged(nameof(Results));
             OnPropertyChanged(nameof(PrimaryInfoColumnIndex));
             OnPropertyChanged(nameof(SecondaryInfoColumnIndex));
             OnPropertyChanged(nameof(TombolaDataHeader));
@@ -189,18 +210,28 @@ namespace TradeUp.Client.ViewModels.Shares
             OnPropertyChanged(nameof(PrimaryInfoColumnIndex));
             OnPropertyChanged(nameof(SecondaryInfoColumnIndex));
             OnPropertyChanged(nameof(TombolaDataHeader));
+            OnPropertyChanged(nameof(Results));
         }
 
         public void ValidChoice()
         {
             IsChoiceAsked = false;
             OnPropertyChanged(nameof(IsChoiceOnScreen));
+
+            UpdateAppScreen(AppScreen.LuckyDraw);
+        }
+
+        public void AskNewFile()
+        {
+            UpdateAppScreen(AppScreen.LoadFile);
         }
 
         public void AskChoice()
         {
             IsChoiceAsked = true;
             OnPropertyChanged(nameof(IsChoiceOnScreen));
+
+            UpdateAppScreen(AppScreen.SetInfo);
         }
 
         public void SetUpDrawContext()
@@ -210,6 +241,8 @@ namespace TradeUp.Client.ViewModels.Shares
             IsDrawContextEdition = true;
             OnPropertyChanged(nameof(EditableContext));
             OnPropertyChanged(nameof(IsDrawContextEdition));
+
+            UpdateAppScreen(AppScreen.EditDraw);
         }
         public void HandleSaveAndCloseContext()
         {
@@ -230,6 +263,8 @@ namespace TradeUp.Client.ViewModels.Shares
             {
                 EditableContext = null;
                 IsDrawContextEdition = false;
+
+                UpdateAppScreen(AppScreen.LuckyDraw);
             }
 
             OnPropertyChanged(nameof(EditableContext));

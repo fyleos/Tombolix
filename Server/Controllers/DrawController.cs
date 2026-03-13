@@ -52,7 +52,7 @@ namespace TradeUp.Server.Controllers
 
         [HttpGet("context/results/{contextId}")]
         [Authorize]
-        public ActionResult<List<DrawResult>> GetContextResults([FromRoute] string contextId)
+        public ActionResult<List<ResultDTO>> GetContextResults([FromRoute] string contextId)
         {
             if (!IsUserLoggedIn())
                 return Unauthorized();
@@ -65,7 +65,9 @@ namespace TradeUp.Server.Controllers
                 userId != context.UserId)
                 return NotFound();
 
-            return Ok(_drawService.GetContextDrawResult(contextId));
+            var drawResults = _drawService.GetContextDrawResult(contextId);
+
+            return Ok(drawResults);
         }
 
         [HttpGet("context/{contextId}")]
@@ -205,7 +207,7 @@ namespace TradeUp.Server.Controllers
                 var itemReference = newContext.Results[i].Info?.Details;
                 var listFound = newContext.DrawnItemsDatas.FirstOrDefault(d => d.Details.SequenceEqual(itemReference));
 
-                string rawId = _drawService.GetDataRawId(listFound);
+                string rawId = _drawService.GetDataRawId(listFound, newContextId);
 
                 DrawResult newItem = new DrawResult()
                 {
@@ -281,7 +283,7 @@ namespace TradeUp.Server.Controllers
                         dataId = Guid.NewGuid().ToString();
                     }
 
-                    if (_drawService.IsDataIdAlredyExist(dataRawId))
+                    if (_drawService.IsDataIdAlredyExist(dataId))
                     {
                         result = false;
                         continue;

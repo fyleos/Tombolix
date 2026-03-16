@@ -121,6 +121,8 @@ namespace TradeUp.Server.Controllers
                 userId != context.UserId)
                 return NotFound();
 
+
+
             return Ok(_drawService.GetContextDrawDataHeaders(contextId));
         }
 
@@ -201,6 +203,7 @@ namespace TradeUp.Server.Controllers
                 return true;
 
             bool result = true;
+            var resultsFromDb = _drawService.GetRawContextDrawResult(newContextId);
 
             for (int i = 0; i < newContext.Results?.Count; i++)
             {
@@ -209,12 +212,20 @@ namespace TradeUp.Server.Controllers
 
                 string rawId = _drawService.GetDataRawId(listFound, newContextId);
 
+                DrawResult? matchingResult = null;
+                if (resultsFromDb.Where(r => r.TirageIndex == newContext.Results[i].TirageIndex).Any())
+                {
+                    matchingResult = resultsFromDb.Where(r => r.TirageIndex == newContext.Results[i].TirageIndex).First();
+                }
+                   
+                string newResultId = matchingResult?.Id ?? Guid.NewGuid().ToString();
+
                 DrawResult newItem = new DrawResult()
                 {
                     ContextId = newContextId,
                     DataRawId = rawId,
                     TirageIndex = newContext.Results[i].TirageIndex,
-                    Id = Guid.NewGuid().ToString()
+                    Id = newResultId
                 };
 
                 result = _drawService.AddContextResult(newItem);
@@ -253,6 +264,11 @@ namespace TradeUp.Server.Controllers
                 return true;
 
             bool result = true;
+
+            if(newContext.DrawnItemsDatas?.Count == _drawService.GetContextDrawData(newContextId).Count)
+            {
+                return result;
+            }
 
             for(int i = 0; i < newContext.DrawnItemsDatas?.Count; i++)
             {

@@ -1,4 +1,7 @@
 ﻿@inherits StateContainerComponent<DrawsViewModel>
+@inject NavigationManager Nav
+@inject DrawService DrawService
+
 @page "/draws"
 
 @layout AdminOverlayLayout
@@ -10,6 +13,9 @@
 <div class="module">
     <AuthorizeView>
         <Authorized>
+            <a @onclick="RedirectToHome" class="cursor-pointer" title="Tombolix">
+                <span class="oi oi-home" aria-hidden="true"></span>
+            </a>
             @if(ViewModel.Draws is null)
             {
                 <p>@T.TEXT("LOADING")</p>
@@ -29,5 +35,9 @@
 </div>
 
 @code {
-
+    public void RedirectToHome()
+    {
+        DrawService.SetCurrentDrawContextAsync(null);
+        Nav.NavigateTo($"/");
+    }
 }

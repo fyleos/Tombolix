@@ -18,10 +18,12 @@ namespace TradeUp.Client.Services
         public List<DrawContextDTO> UserDraws { get; internal set; }
         public DrawContextDTO? CurrentDraw { get; internal set; }
 
-        public async Task SetCurrentDrawContextAsync(DrawContextDTO context)
+        public async Task SetCurrentDrawContextAsync(DrawContextDTO? context)
         {
             CurrentDraw = context;
-            await FeedContextDatasAsync(CurrentDraw);
+
+            if(CurrentDraw is not null)
+                await FeedContextDatasAsync(CurrentDraw);
 
             return;
         }

@@ -121,12 +121,21 @@ namespace TradeUp.Server.Services
 
         internal string AddDrawContext(DrawContext context)
         {
-            if(_dbContext.DrawContexts.Any(c => c.ID == context.ID))
-                _dbContext.DrawContexts.Update(context);
-            else
+            if (!_dbContext.DrawContexts.Any(c => c.ID == context.ID))
+            {
                 _dbContext.DrawContexts.Add(context);
+                _dbContext.SaveChanges();
+            }
+            else 
+            {
+                DrawContext tmp_context = _dbContext.DrawContexts.Where(c => c.ID == context.ID).First();
+
+                tmp_context.Name = context.Name;
+
+                _dbContext.DrawContexts.Update(tmp_context);
+                _dbContext.SaveChanges();
+            }
             
-            _dbContext.SaveChanges();
             return context.ID;
         }
 
@@ -158,20 +167,11 @@ namespace TradeUp.Server.Services
 
         internal bool AddContextResult(DrawResult newItem)
         {
-            int tries = 50;
-            while (tries > 0 && _dbContext.DrawResults.Any(d => d.Id == newItem.Id))
+            if (!_dbContext.DrawResults.Any(d => d.Id == newItem.Id))
             {
-                tries--;
-                newItem.Id = Guid.NewGuid().ToString();
+                _dbContext.DrawResults.Add(newItem); 
+                _dbContext.SaveChanges();
             }
-
-            if (_dbContext.DrawResults.Any(d => d.Id == newItem.Id))
-            {
-                return false;
-            }
-
-            _dbContext.DrawResults.Add(newItem);
-            _dbContext.SaveChanges();
 
             return true;
         }
@@ -234,7 +234,12 @@ namespace TradeUp.Server.Services
 
             datas = datas.OrderBy(r => r.RawId).ToList();
 
-            string rawId = datas.First().RawId;
+            string rawId = string.Empty;
+            if (datas.Any())
+            {
+                rawId = datas.First().RawId ?? "";
+            }
+
             var tmp_data_list = datas.Where(d => d.RawId == rawId);
             List<string> tmp_headers = new List<string>();
 
@@ -290,6 +295,11 @@ namespace TradeUp.Server.Services
             _dbContext.DrawItems.RemoveRange(relatedItems);
 
             return true;
+        }
+
+        internal IEnumerable<DrawResult> GetRawContextDrawResult(string newContextId)
+        {
+            return _dbContext.DrawResults.Where(r => r.ContextId == newContextId) ?? Enumerable.Empty<DrawResult>();
         }
     }
 }
